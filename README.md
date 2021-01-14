@@ -1,5 +1,7 @@
 # 2021 Infinite Recharge Official
 
+[![Build Status](https://github.com/FRC6854/2021InfiniteRechargeOfficial/workflows/Java%20CI/badge.svg)](https://github.com/FRC6854/2021InfiniteRechargeOfficial/actions)
+
 Build project with internet connection before deploying to robot to fetch all `vendordeps`. Also use latest `VIKING` package.
 
 ### Layout
