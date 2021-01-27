@@ -29,10 +29,10 @@ public class Climber extends SubsystemBase implements Constants, RobotMap {
     lift.setPIDF(LIFT_kP, LIFT_kI, LIFT_kD, LIFT_kF);
     lift.setSmartMotion(LIFT_MAX_VELOCITY, LIFT_ACCELERATION);
 
-    lift.getSparkMAX().enableSoftLimit(SoftLimitDirection.kForward, true);
-    lift.getSparkMAX().setSoftLimit(SoftLimitDirection.kForward, LIFT_MAX_ROTATIONS);
-    lift.getSparkMAX().enableSoftLimit(SoftLimitDirection.kReverse, true);
-    lift.getSparkMAX().setSoftLimit(SoftLimitDirection.kReverse, 0.05f);
+    lift.enableSoftLimit(SoftLimitDirection.kForward, true);
+    lift.setSoftLimit(SoftLimitDirection.kForward, LIFT_MAX_ROTATIONS);
+    lift.enableSoftLimit(SoftLimitDirection.kReverse, true);
+    lift.setSoftLimit(SoftLimitDirection.kReverse, 0.05f);
   }
 
   public void setLiftPosition(double ticks) {
@@ -60,8 +60,8 @@ public class Climber extends SubsystemBase implements Constants, RobotMap {
   }
 
   public void fullStop() {
-    lift.getSparkMAX().disable();
-    massShifter.getSparkMAX().disable();
+    lift.disable();
+    massShifter.disable();
   }
 
   public double getLiftOutput() {
@@ -73,7 +73,7 @@ public class Climber extends SubsystemBase implements Constants, RobotMap {
   }
 
   public double getWinchOutput() {
-    return winchMaster.getTalonSRX().getMotorOutputPercent();
+    return winchMaster.getMotorOutputPercent();
   }
 
   public int getWinchTicks() {

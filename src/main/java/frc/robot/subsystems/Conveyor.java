@@ -26,11 +26,11 @@ public class Conveyor extends SubsystemBase implements Constants, RobotMap {
   }
 
   public void fullStopIntake() {
-    intakeConveyor.getSparkMAX().disable();
+    intakeConveyor.disable();
   }
 
   public void fullStopUpper() {
-    upperConveyor.getSparkMAX().disable();
+    upperConveyor.disable();
   }
 
   public void fullStop() {

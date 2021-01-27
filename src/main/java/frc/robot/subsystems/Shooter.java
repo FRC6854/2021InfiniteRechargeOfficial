@@ -59,11 +59,11 @@ public class Shooter extends SubsystemBase implements Constants, RobotMap {
   }
 
   public void fullStopTop() {
-    topShooter.getSparkMAX().disable();
+    topShooter.disable();
   }
 
   public void fullStopBottom() {
-    bottomShooter.getSparkMAX().disable();
+    bottomShooter.disable();
   }
 
   public void setPIDF(double p, double i, double d, double f) {

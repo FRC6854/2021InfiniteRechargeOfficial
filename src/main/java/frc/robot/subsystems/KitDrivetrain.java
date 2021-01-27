@@ -1,13 +1,25 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.InvertType;
+import com.ctre.phoenix.motorcontrol.TalonSRXSimCollection;
 import com.kauailabs.navx.frc.AHRS;
 
 import viking.controllers.PIDController;
 import viking.controllers.ctre.VikingSPX;
 import viking.controllers.ctre.VikingSRX;
-
+import edu.wpi.first.hal.SimDouble;
+import edu.wpi.first.hal.simulation.SimDeviceDataJNI;
+import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.SPI.Port;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
+import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.RobotMap;
@@ -29,6 +41,14 @@ public class KitDrivetrain extends SubsystemBase implements Constants, RobotMap 
   private double leftOutput = 0;
   private double rightOutput = 0;
 
+  private DifferentialDrive drive;
+  private DifferentialDriveOdometry odometry;
+  private DifferentialDrivetrainSim driveSim;
+  private Field2d field;
+
+  private TalonSRXSimCollection leftSim;
+  private TalonSRXSimCollection rightSim;
+
   public KitDrivetrain() {
     leftMaster = new VikingSRX(CAN_LEFT_FRONT, false, true, FeedbackDevice.CTRE_MagEncoder_Relative, DRIVETRAIN_kF, DRIVETRAIN_kP, DRIVETRAIN_kI, DRIVETRAIN_kD, 1250, 1250, DRIVETRAIN_kMetersPerRevolution);
     leftSlave = new VikingSPX(CAN_LEFT_BACK, leftMaster, false);
@@ -44,47 +64,54 @@ public class KitDrivetrain extends SubsystemBase implements Constants, RobotMap 
     }
 
     gyroPID = new PIDController(GYRO_kP, GYRO_kI, GYRO_kD);
+
+    drive = new DifferentialDrive(leftMaster, rightMaster);
+    odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(gyro.getAngle()));
+
+    if (RobotBase.isSimulation()) {
+      leftMaster.setInverted(InvertType.None);
+      rightMaster.setInverted(InvertType.None);
+      leftMaster.setSensorPhase(false);
+      rightMaster.setSensorPhase(false);
+
+      //driveSim = new DifferentialDrivetrainSim(driveMotor, gearing, jKgMetersSquared, massKg, wheelRadiusMeters, trackWidthMeters, measurementStdDevs);
+     
+      leftSim = rightMaster.getSimCollection();
+      rightSim = rightMaster.getSimCollection();
+
+      field = new Field2d();
+      SmartDashboard.putData("Field", field);
+    }
   }
 
-  public void arcadeDrive(double xSpeed, double zRotation) {
-    zRotation = limit(zRotation);
-    zRotation = applyDeadband(zRotation, DRIVETRAIN_kDeadband);
+  @Override
+  public void periodic() {
+    odometry.update(
+      Rotation2d.fromDegrees(getGyroAngle()), 
+      ticksToMeters(leftMaster.getTicks()), 
+      ticksToMeters(rightMaster.getTicks()));
+    field.setRobotPose(getPose());
+  }
 
-    xSpeed = limit(xSpeed);
-    xSpeed = applyDeadband(xSpeed, DRIVETRAIN_kDeadband);
+  @Override
+  public void simulationPeriodic() {
+    // To update our simulation, we set motor voltage inputs, update the simulation,
+    // and write the simulated positions and velocities to our simulated encoder and
+    // gyro.
+    // We negate the right side so that positive voltages make the right side
+    // move forward.
+    driveSim.setInputs(leftMaster.getMotorOutputVoltage() * (leftMaster.getInverted() ? -1 : 1), 
+      rightMaster.getMotorOutputVoltage() * (rightMaster.getInverted() ? -1 : 1));
 
-    // Square the inputs (while preserving the sign) to increase fine control
-    // while permitting full power.
-    zRotation = Math.copySign(zRotation * zRotation, zRotation);
-    xSpeed = Math.copySign(xSpeed * xSpeed, xSpeed);
+    driveSim.update(0.02);
 
-    double leftMotorOutput;
-    double rightMotorOutput;
+    leftSim.setQuadratureRawPosition(metersToTicks(driveSim.getLeftPositionMeters()));
+    rightSim.setQuadratureRawPosition(metersToTicks(driveSim.getRightPositionMeters()));
 
-    double maxInput = Math.copySign(Math.max(Math.abs(zRotation), Math.abs(xSpeed)), zRotation);
-
-    if (zRotation >= 0.0) {
-      // First quadrant, else second quadrant
-      if (xSpeed >= 0.0) {
-        leftMotorOutput = maxInput;
-        rightMotorOutput = zRotation - xSpeed;
-      } else {
-        leftMotorOutput = zRotation + xSpeed;
-        rightMotorOutput = maxInput;
-      }
-    } else {
-      // Third quadrant, else fourth quadrant
-      if (xSpeed >= 0.0) {
-        leftMotorOutput = zRotation + xSpeed;
-        rightMotorOutput = maxInput;
-      } else {
-        leftMotorOutput = maxInput;
-        rightMotorOutput = zRotation - xSpeed;
-      }
-    }
-
-    driveLeft(limit(leftMotorOutput));
-    driveRight(limit(rightMotorOutput) * -1);
+    // Crazy dumb NavX simulation stuff that I don't get
+    int testing = SimDeviceDataJNI.getSimDeviceHandle("navX-Sensor[0]");
+    SimDouble angle = new SimDouble(SimDeviceDataJNI.getSimValueHandle(testing, "Yaw"));
+    angle.set(-driveSim.getHeading().getDegrees());
   }
 
   public VikingSRX getLeftMaster() {
@@ -93,6 +120,14 @@ public class KitDrivetrain extends SubsystemBase implements Constants, RobotMap 
 
   public VikingSRX getRightMaster() {
     return rightMaster;
+  }
+
+  public Pose2d getPose() {
+    return odometry.getPoseMeters();
+  }
+
+  public void arcadeDrive(double xSpeed, double zRotation) {
+    drive.arcadeDrive(xSpeed, zRotation);
   }
 
   public void motionProfile() {
@@ -115,20 +150,12 @@ public class KitDrivetrain extends SubsystemBase implements Constants, RobotMap 
     rightMaster.motionMagic(rotationsToTicks(rotations));
   }
 
-  public void driveLeft(double value) {
-    leftOutput = value;
-    leftMaster.percentOutput(value);
-  }
+  public void turn(double setAngle, double speed, double tolerance) {
+    double angle = gyroPID.calcPID(setAngle, getGyroAngle(), tolerance);
 
-  public void driveRight(double value) {
-    rightOutput = value;
-    rightMaster.percentOutput(value);
-  }
-
-  public void tankDrive(double left, double right) {
-    driveLeft(left);
-    driveRight(right);
-  }
+		if (Math.abs(setAngle - getGyroAngle()) < tolerance) drive.tankDrive(0, 0);
+		else drive.tankDrive(angle * speed, -angle * speed);
+	}
 
   public void zeroSensors() {
     leftMaster.zeroSensor();
@@ -139,48 +166,17 @@ public class KitDrivetrain extends SubsystemBase implements Constants, RobotMap 
     return (int) rotations * 4096;
   }
 
-  public double metersToTicks(double meters) {
-    return rotationsToTicks(meters / (2 * Math.PI * 0.0762));
-  }
-
-  public int ticksToRotations(int ticks) {
+  public double ticksToRotations(double ticks) {
     return ticks / 4096;
   }
 
-  private double limit(double value) {
-    if (value > 1.0) {
-      return 1.0;
-    }
-    if (value < -1.0) {
-      return -1.0;
-    }
-    return value;
+  public int metersToTicks(double meters) {
+    return rotationsToTicks(meters / (2 * Math.PI * 0.0762));
   }
 
-  private double applyDeadband(double value, double deadband) {
-    if (Math.abs(value) > deadband) {
-      if (value > 0.0) {
-        return (value - deadband) / (1.0 - deadband);
-      } else {
-        return (value + deadband) / (1.0 - deadband);
-      }
-    } else {
-      return 0.0;
-    }
+  public double ticksToMeters(double ticks) {
+    return ticksToRotations(ticks) * (2 * Math.PI * 0.0762);
   }
-
-	public void turn(double setAngle, double speed, double tolerance) {
-    double angle = gyroPID.calcPID(setAngle, getGyroAngle(), tolerance);
-
-		if(Math.abs(setAngle-getGyroAngle()) < tolerance){ 
-			driveLeft(0); 
-			driveRight(0);
-		}
-		else{ 
-			driveLeft(angle * speed);
-			driveRight(-angle * speed); 
-		}
-	}
   
   public boolean gyroPIDDone() {
     return gyroPID.isDone();
