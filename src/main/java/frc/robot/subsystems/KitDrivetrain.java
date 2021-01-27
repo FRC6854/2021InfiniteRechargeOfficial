@@ -84,7 +84,17 @@ public class KitDrivetrain extends SubsystemBase implements Constants, RobotMap 
     autoTrajectoryConfig = new TrajectoryConfig(
       DRIVETRAIN_kMaxSpeed,
       DRIVETRAIN_kMaxAcceleration
-    ).setKinematics(DRIVETRAIN_kKinematics);
+    ).setKinematics(DRIVETRAIN_kKinematics).addConstraint(
+      new DifferentialDriveVoltageConstraint(
+        new SimpleMotorFeedforward(
+          DRIVETRAIN_ksVolts, 
+          DRIVETRAIN_kvVoltSecondsPerMeter, 
+          DRIVETRAIN_kaVoltSecondsSquaredPerMeter
+        ),
+        DRIVETRAIN_kKinematics,
+        10
+      )
+    );
 
     field = new Field2d();
     SmartDashboard.putData("Field", field);
@@ -134,7 +144,7 @@ public class KitDrivetrain extends SubsystemBase implements Constants, RobotMap 
     // Crazy dumb NavX simulation stuff that I don't get
     int testing = SimDeviceDataJNI.getSimDeviceHandle("navX-Sensor[0]");
     SimDouble angle = new SimDouble(SimDeviceDataJNI.getSimValueHandle(testing, "Yaw"));
-    angle.set(-driveSim.getHeading().getDegrees());
+    angle.set(driveSim.getHeading().getDegrees());
   }
 
   public VikingSRX getLeftMaster() {
@@ -261,6 +271,7 @@ public class KitDrivetrain extends SubsystemBase implements Constants, RobotMap 
   }
 
   public RamseteCommand createRamseteCommand(Trajectory path) {
+    resetOdemetry(new Pose2d());
     return new RamseteCommand(
       path, 
       this::getPose, 
