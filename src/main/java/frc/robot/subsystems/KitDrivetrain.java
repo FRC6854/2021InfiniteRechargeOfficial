@@ -13,6 +13,7 @@ import edu.wpi.first.hal.simulation.SimDeviceDataJNI;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.SPI.Port;
+import edu.wpi.first.wpilibj.Ultrasonic.Unit;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
@@ -20,10 +21,12 @@ import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.system.plant.DCMotor;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
+import edu.wpi.first.wpiutil.math.VecBuilder;
 import frc.robot.RobotMap;
 import frc.robot.commands.drivetrain.ArcadeDrive;
+import frc.robot.utils.UnitConversion;
 
 public class KitDrivetrain extends SubsystemBase implements Constants, RobotMap {
   private static KitDrivetrain instance = null;
@@ -69,12 +72,20 @@ public class KitDrivetrain extends SubsystemBase implements Constants, RobotMap 
     odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(gyro.getAngle()));
 
     if (RobotBase.isSimulation()) {
-      leftMaster.setInverted(InvertType.None);
-      rightMaster.setInverted(InvertType.None);
-      leftMaster.setSensorPhase(false);
-      rightMaster.setSensorPhase(false);
+      //leftMaster.setInverted(InvertType.None);
+      //rightMaster.setInverted(InvertType.None);
+      //leftMaster.setSensorPhase(false);
+      //rightMaster.setSensorPhase(false);
 
-      //driveSim = new DifferentialDrivetrainSim(driveMotor, gearing, jKgMetersSquared, massKg, wheelRadiusMeters, trackWidthMeters, measurementStdDevs);
+      driveSim = new DifferentialDrivetrainSim(
+        DCMotor.getCIM(2), 
+        DRIVETRAIN_kDriveGearing, 
+        7.5,
+        60,
+        DRIVETRAIN_kWheelRadius, 
+        0.9, 
+        VecBuilder.fill(0.001, 0.001, 0.001, 0.1, 0.1, 0.005, 0.005)
+      );
      
       leftSim = rightMaster.getSimCollection();
       rightSim = rightMaster.getSimCollection();
@@ -88,8 +99,8 @@ public class KitDrivetrain extends SubsystemBase implements Constants, RobotMap 
   public void periodic() {
     odometry.update(
       Rotation2d.fromDegrees(getGyroAngle()), 
-      ticksToMeters(leftMaster.getTicks()), 
-      ticksToMeters(rightMaster.getTicks()));
+      UnitConversion.nativeUnitsToDistanceMeters(leftMaster.getTicks()),
+      UnitConversion.nativeUnitsToDistanceMeters(rightMaster.getTicks()));
     field.setRobotPose(getPose());
   }
 
@@ -105,8 +116,10 @@ public class KitDrivetrain extends SubsystemBase implements Constants, RobotMap 
 
     driveSim.update(0.02);
 
-    leftSim.setQuadratureRawPosition(metersToTicks(driveSim.getLeftPositionMeters()));
-    rightSim.setQuadratureRawPosition(metersToTicks(driveSim.getRightPositionMeters()));
+    leftSim.setQuadratureRawPosition(UnitConversion.distanceToNativeUnits(driveSim.getLeftPositionMeters()));
+    leftSim.setQuadratureVelocity(UnitConversion.velocityToNativeUnits(driveSim.getLeftVelocityMetersPerSecond()));
+    rightSim.setQuadratureRawPosition(UnitConversion.distanceToNativeUnits(driveSim.getRightPositionMeters()));
+    rightSim.setQuadratureVelocity(UnitConversion.velocityToNativeUnits(driveSim.getRightVelocityMetersPerSecond()));
 
     // Crazy dumb NavX simulation stuff that I don't get
     int testing = SimDeviceDataJNI.getSimDeviceHandle("navX-Sensor[0]");
@@ -127,7 +140,7 @@ public class KitDrivetrain extends SubsystemBase implements Constants, RobotMap 
   }
 
   public void arcadeDrive(double xSpeed, double zRotation) {
-    drive.arcadeDrive(xSpeed, zRotation);
+    drive.arcadeDrive(xSpeed, -zRotation);
   }
 
   public void motionProfile() {
@@ -141,8 +154,8 @@ public class KitDrivetrain extends SubsystemBase implements Constants, RobotMap 
   }
 
   public void driveMeters(double meters) {
-    leftMaster.motionMagic(metersToTicks(meters));
-    rightMaster.motionMagic(metersToTicks(meters));
+    leftMaster.motionMagic(UnitConversion.distanceToNativeUnits(meters));
+    rightMaster.motionMagic(UnitConversion.distanceToNativeUnits(meters));
   }
 
   public void driveRotations(double rotations) {
@@ -168,14 +181,6 @@ public class KitDrivetrain extends SubsystemBase implements Constants, RobotMap 
 
   public double ticksToRotations(double ticks) {
     return ticks / 4096;
-  }
-
-  public int metersToTicks(double meters) {
-    return rotationsToTicks(meters / (2 * Math.PI * 0.0762));
-  }
-
-  public double ticksToMeters(double ticks) {
-    return ticksToRotations(ticks) * (2 * Math.PI * 0.0762);
   }
   
   public boolean gyroPIDDone() {

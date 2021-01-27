@@ -13,8 +13,11 @@ public interface Constants {
 	public final double DRIVETRAIN_kF = 0.5;
 	
 	public final double DRIVETRAIN_kMetersPerRevolution = 2 * Math.PI * 0.0762;
+	public final double DRIVETRAIN_kWheelRadius = 0.0762;
 
-	public final double DRIVETRAIN_kDeadband = 0.02; 
+	public final double DRIVETRAIN_kDriveGearing = 10.75;
+
+	public final int DRIVETRAIN_kCPR = 4096;
 
 	/**
 	 * --------------------
