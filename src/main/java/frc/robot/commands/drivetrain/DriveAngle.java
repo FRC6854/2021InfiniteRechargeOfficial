@@ -25,6 +25,7 @@ public class DriveAngle extends CommandBase implements Constants {
     this.speed = speed;
 
     drivetrain.changeGyroPID(GYRO_kP, GYRO_kI, GYRO_kD);
+    drivetrain.changeGyroPIDTolerance(toleranceDegrees);
   }
 
   @Override

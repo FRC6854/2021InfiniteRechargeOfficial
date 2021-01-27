@@ -26,7 +26,7 @@ public class LEDControllerNew extends SubsystemBase implements LEDMappingsNew {
 
     private LEDMode currentMode = LEDMode.DEFAULT;
 
-    public LEDControllerNew () {
+    private LEDControllerNew () {
         oi = OI.getInstance();
     }
 
