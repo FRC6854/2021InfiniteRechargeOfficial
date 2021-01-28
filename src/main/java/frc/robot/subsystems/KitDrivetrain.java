@@ -271,7 +271,7 @@ public class KitDrivetrain extends SubsystemBase implements Constants, RobotMap 
   }
 
   public RamseteCommand createRamseteCommand(Trajectory path) {
-    resetOdemetry(new Pose2d());
+    resetOdemetry(path.getInitialPose());
     return new RamseteCommand(
       path, 
       this::getPose, 
