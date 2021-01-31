@@ -1,7 +1,6 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.TalonSRXSimCollection;
 import com.kauailabs.navx.frc.AHRS;
 
@@ -13,9 +12,7 @@ import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.controller.RamseteController;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.SPI.Port;
-import edu.wpi.first.wpilibj.Ultrasonic.Unit;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
@@ -26,8 +23,6 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
-import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
-import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpiutil.math.VecBuilder;
@@ -60,8 +55,6 @@ public class KitDrivetrain extends SubsystemBase implements Constants, RobotMap 
   private TalonSRXSimCollection leftSim;
   private TalonSRXSimCollection rightSim;
 
-  private TrajectoryConfig autoTrajectoryConfig;
-
   public KitDrivetrain() {
     leftMaster = new VikingSRX(CAN_LEFT_FRONT, false, true, FeedbackDevice.CTRE_MagEncoder_Relative, DRIVETRAIN_kF, DRIVETRAIN_kP, DRIVETRAIN_kI, DRIVETRAIN_kD, 1250, 1250, DRIVETRAIN_kMetersPerRevolution);
     leftSlave = new VikingSPX(CAN_LEFT_BACK, leftMaster, false);
@@ -81,21 +74,6 @@ public class KitDrivetrain extends SubsystemBase implements Constants, RobotMap 
     drive = new DifferentialDrive(leftMaster, rightMaster);
     odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(gyro.getAngle()));
 
-    autoTrajectoryConfig = new TrajectoryConfig(
-      DRIVETRAIN_kMaxSpeed,
-      DRIVETRAIN_kMaxAcceleration
-    ).setKinematics(DRIVETRAIN_kKinematics).addConstraint(
-      new DifferentialDriveVoltageConstraint(
-        new SimpleMotorFeedforward(
-          DRIVETRAIN_ksVolts, 
-          DRIVETRAIN_kvVoltSecondsPerMeter, 
-          DRIVETRAIN_kaVoltSecondsSquaredPerMeter
-        ),
-        DRIVETRAIN_kKinematics,
-        10
-      )
-    );
-
     field = new Field2d();
     SmartDashboard.putData("Field", field);
 
@@ -106,7 +84,7 @@ public class KitDrivetrain extends SubsystemBase implements Constants, RobotMap 
         7.5,
         60,
         DRIVETRAIN_kWheelRadius, 
-        0.9, 
+        DRIVETRAIN_kKinematics.trackWidthMeters, 
         VecBuilder.fill(0.001, 0.001, 0.001, 0.1, 0.1, 0.005, 0.005)
       );
      
@@ -159,10 +137,6 @@ public class KitDrivetrain extends SubsystemBase implements Constants, RobotMap 
     return odometry.getPoseMeters();
   }
 
-  public TrajectoryConfig getTrajectoryConfig() {
-    return autoTrajectoryConfig;
-  }
-
   public DifferentialDriveWheelSpeeds getWheelSpeeds() {
     return new DifferentialDriveWheelSpeeds(
       UnitConversion.nativeUnitsToVelocityMetersPerSecond(leftMaster.getVelocity()), 
@@ -176,7 +150,7 @@ public class KitDrivetrain extends SubsystemBase implements Constants, RobotMap 
   }
 
   public void arcadeDrive(double xSpeed, double zRotation) {
-    drive.arcadeDrive(xSpeed, -zRotation);
+    drive.arcadeDrive(xSpeed, zRotation);
   }
 
   public void tankDriveVolts(double leftVolts, double rightVolts) {
@@ -275,7 +249,7 @@ public class KitDrivetrain extends SubsystemBase implements Constants, RobotMap 
     return new RamseteCommand(
       path, 
       this::getPose, 
-      new RamseteController(DRIVETRAIN_kRamseteB, DRIVETRAIN_kRamseteZeta), 
+      new RamseteController(), 
       new SimpleMotorFeedforward(
         DRIVETRAIN_ksVolts, 
         DRIVETRAIN_kvVoltSecondsPerMeter, 

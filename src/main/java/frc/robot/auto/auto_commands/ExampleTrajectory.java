@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.subsystems.Constants;
 import frc.robot.subsystems.KitDrivetrain;
 
 public class ExampleTrajectory extends SequentialCommandGroup {
@@ -28,7 +29,7 @@ public class ExampleTrajectory extends SequentialCommandGroup {
         new Translation2d(7, 5)
       ),
       new Pose2d(10, 2, new Rotation2d(0)),
-      drivetrain.getTrajectoryConfig()
+      Constants.DRIVETRAIN_kAutoConfig
     );
     
     addCommands(drivetrain.createRamseteCommand(exampleTrajectory));

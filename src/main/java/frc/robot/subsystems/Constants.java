@@ -1,6 +1,9 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
+import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
+import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
 
 public interface Constants {
 	
@@ -21,13 +24,11 @@ public interface Constants {
 
 	public final int DRIVETRAIN_kCPR = 4096;
 
-	public final DifferentialDriveKinematics DRIVETRAIN_kKinematics = new DifferentialDriveKinematics(0.9);
+	public final DifferentialDriveKinematics DRIVETRAIN_kKinematics = new DifferentialDriveKinematics(0.6);
 
-	public final double DRIVETRAIN_kMaxSpeed = 2;
+	public final double DRIVETRAIN_kMaxSpeed = 3;
 	public final double DRIVETRAIN_kMaxAcceleration = 3;
-	public final double DRIVETRAIN_kRamseteB = 2;
-	public final double DRIVETRAIN_kRamseteZeta = 0.7;
-	
+
 	// ----------------------------------------------
 	// PATH FOLLOWING VARIABLES FOR TESTING MUST USE PROGRAM TO FIND ACTUAL VALUES
 	// ----------------------------------------------
@@ -36,12 +37,27 @@ public interface Constants {
     // for *your* robot's drive.
     // The Robot Characterization Toolsuite provides a convenient tool for obtaining these
     // values for your robot.
-    public final double DRIVETRAIN_ksVolts = 0.22;
-    public final double DRIVETRAIN_kvVoltSecondsPerMeter = 1.98;
-    public final double DRIVETRAIN_kaVoltSecondsSquaredPerMeter = 0.2;
+    public final double DRIVETRAIN_ksVolts = 1.5;
+    public final double DRIVETRAIN_kvVoltSecondsPerMeter = 1.89;
+    public final double DRIVETRAIN_kaVoltSecondsSquaredPerMeter = 0.243;
 
-    // Example value only - as above, this must be tuned for your drive!
-    public final double DRIVETRAIN_kPVelocity = 1;
+	public final TrajectoryConfig DRIVETRAIN_kAutoConfig = new TrajectoryConfig(
+      DRIVETRAIN_kMaxSpeed,
+      DRIVETRAIN_kMaxAcceleration
+	).setKinematics(DRIVETRAIN_kKinematics).addConstraint(
+      new DifferentialDriveVoltageConstraint(
+        new SimpleMotorFeedforward(
+          DRIVETRAIN_ksVolts, 
+          DRIVETRAIN_kvVoltSecondsPerMeter, 
+          DRIVETRAIN_kaVoltSecondsSquaredPerMeter
+        ),
+        DRIVETRAIN_kKinematics,
+        10
+      )
+	);
+	
+	// Example value only - as above, this must be tuned for your drive!
+	public final double DRIVETRAIN_kPVelocity = 9.95;
 
 	/**
 	 * --------------------
