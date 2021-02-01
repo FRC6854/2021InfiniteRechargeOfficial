@@ -32,10 +32,7 @@ public class ArcadeDrive extends CommandBase {
   public void execute() {
     if (Robot.driver.getControllerYButtonPressed()) {
       CommandScheduler.getInstance().schedule(
-        new InstantCommand(() -> drivetrain.resetOdemetry(drivetrain.loadToTrench.getInitialPose()), drivetrain)
-        .andThen(drivetrain.createRamseteCommand(drivetrain.loadToTrench))
-        .andThen(new InstantCommand(() -> drivetrain.resetOdemetry(drivetrain.trenchToLoad.getInitialPose()), drivetrain))
-        .andThen(drivetrain.createRamseteCommand(drivetrain.trenchToLoad))
+        drivetrain.createRamseteCommand(drivetrain.loadToTrench).andThen(drivetrain.createRamseteCommand(drivetrain.trenchToLoad))
         .withInterrupt(() -> (Robot.driver.getControllerLeftStickX() > 0 || Robot.driver.getControllerLeftStickY() > 0 || Robot.driver.getControllerRightStickX() > 0 || Robot.driver.getControllerRightStickY() > 0))
       );
     }
