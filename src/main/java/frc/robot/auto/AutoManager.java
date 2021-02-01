@@ -4,8 +4,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.auto.auto_commands.ExampleTrajectory;
 import frc.robot.auto.auto_commands.ExampleTrajectoryPathWeaver;
-import frc.robot.auto.auto_commands.MiddleTrenchShoot;
-import frc.robot.auto.auto_commands.RightTrenchShoot;
 import frc.robot.commands.debug.LimelightCalibration;
 
 public class AutoManager {
@@ -15,10 +13,8 @@ public class AutoManager {
     private static SendableChooser<Integer> autoChooser = new SendableChooser<Integer>();
 
     private AutoManager () {
-      autoChooser.setDefaultOption("Middle Trench Shoot", 1);
-      autoChooser.addOption("Right Trench Shoot", 2);
-      autoChooser.addOption("Example Trajectory", 3);
-      autoChooser.addOption("Example Trajectory File", 4);
+      autoChooser.setDefaultOption("Example Trajectory", 1);
+      autoChooser.addOption("Example Trajectory File", 2);
       autoChooser.addOption("Limelight Calibration", 0);
     }
 
@@ -29,13 +25,9 @@ public class AutoManager {
     public Command getAutoChooserCommand() {
       switch (autoChooser.getSelected()) {
         case 1:
-          return new MiddleTrenchShoot();
-        case 2:
-          return new RightTrenchShoot();
-        case 3:
           return new ExampleTrajectory();
-        case 4:
-          return new ExampleTrajectoryPathWeaver("MiddleToTrench.wpilib.json");
+        case 2:
+          return new ExampleTrajectoryPathWeaver("MiddleToTrench", "TrenchToCorner");
         case 0:
           return new LimelightCalibration();
       }

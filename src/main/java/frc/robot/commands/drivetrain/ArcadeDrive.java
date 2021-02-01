@@ -2,10 +2,11 @@ package frc.robot.commands.drivetrain;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Robot;
-import frc.robot.led.LEDControllerNew;
-import frc.robot.led.LEDControllerNew.LEDMode;
+import viking.led.LEDController;
+import viking.led.LEDController.LEDMode;
 import frc.robot.subsystems.Constants;
 import frc.robot.subsystems.KitDrivetrain;
 
@@ -29,12 +30,21 @@ public class ArcadeDrive extends CommandBase {
 
   @Override
   public void execute() {
-    if (Robot.driver.getControllerAButton() == true) {
+    if (Robot.driver.getControllerYButtonPressed()) {
+      CommandScheduler.getInstance().schedule(
+        new InstantCommand(() -> drivetrain.resetOdemetry(drivetrain.loadToTrench.getInitialPose()), drivetrain)
+        .andThen(drivetrain.createRamseteCommand(drivetrain.loadToTrench))
+        .andThen(new InstantCommand(() -> drivetrain.resetOdemetry(drivetrain.trenchToLoad.getInitialPose()), drivetrain))
+        .andThen(drivetrain.createRamseteCommand(drivetrain.trenchToLoad))
+        .withInterrupt(() -> (Robot.driver.getControllerLeftStickX() > 0 || Robot.driver.getControllerLeftStickY() > 0 || Robot.driver.getControllerRightStickX() > 0 || Robot.driver.getControllerRightStickY() > 0))
+      );
+    }
+    if (Robot.driver.getControllerAButton()) {
       // Setup Limelight for targeting
       limelight.setLEDMode(LightMode.ON);
       limelight.setDriverMode(false);
 
-      if (limelight.validTargets() == true) {
+      if (limelight.validTargets()) {
         SmartDashboard.putNumber("Limelight Y", limelight.targetY());
 
         // Calculate the PID output using a threshold and make the target 0 (center of the crosshair)
@@ -45,11 +55,11 @@ public class ArcadeDrive extends CommandBase {
           else if (pidAim < 0) pidAim = -Constants.AIM_kMaxCommand;
         }
 
-        if (aimPIDController.isDone() == true) {
-          LEDControllerNew.getInstance().setMode(LEDMode.VISION);
+        if (aimPIDController.isDone()) {
+          LEDController.getInstance().setMode(LEDMode.VISION);
         }
         else {
-          LEDControllerNew.getInstance().setMode(LEDMode.NO_VISION);
+          LEDController.getInstance().setMode(LEDMode.NO_VISION);
         }
 
         // Drive using the output values
@@ -63,9 +73,14 @@ public class ArcadeDrive extends CommandBase {
       limelight.setLEDMode(LightMode.OFF);
       limelight.setDriverMode(true);
 
-      LEDControllerNew.getInstance().setMode(LEDMode.DEFAULT);
+      LEDController.getInstance().setMode(LEDMode.DEFAULT);
 
       drivetrain.arcadeDrive(Robot.driver.getControllerLeftStickY(), Robot.driver.getControllerRightStickX());
     }
+  }
+
+  @Override
+  public void end(boolean interrupted) {
+    if (interrupted == false) drivetrain.arcadeDrive(0, 0);
   }
 }

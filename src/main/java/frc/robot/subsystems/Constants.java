@@ -15,7 +15,7 @@ public interface Constants {
     public final double DRIVETRAIN_kP = 1.0;
     public final double DRIVETRAIN_kI = 0.0; 
     public final double DRIVETRAIN_kD = 0.0;
-	public final double DRIVETRAIN_kF = 0.5;
+	public final double DRIVETRAIN_kF = 0.0;
 	
 	public final double DRIVETRAIN_kMetersPerRevolution = 2 * Math.PI * 0.0762;
 	public final double DRIVETRAIN_kWheelRadius = 0.0762;
@@ -44,20 +44,10 @@ public interface Constants {
 	public final TrajectoryConfig DRIVETRAIN_kAutoConfig = new TrajectoryConfig(
       DRIVETRAIN_kMaxSpeed,
       DRIVETRAIN_kMaxAcceleration
-	).setKinematics(DRIVETRAIN_kKinematics).addConstraint(
-      new DifferentialDriveVoltageConstraint(
-        new SimpleMotorFeedforward(
-          DRIVETRAIN_ksVolts, 
-          DRIVETRAIN_kvVoltSecondsPerMeter, 
-          DRIVETRAIN_kaVoltSecondsSquaredPerMeter
-        ),
-        DRIVETRAIN_kKinematics,
-        10
-      )
-	);
+	).setKinematics(DRIVETRAIN_kKinematics);
 	
 	// Example value only - as above, this must be tuned for your drive!
-	public final double DRIVETRAIN_kPVelocity = 9.95;
+	public final double DRIVETRAIN_kPVelocity = 2;
 
 	/**
 	 * --------------------

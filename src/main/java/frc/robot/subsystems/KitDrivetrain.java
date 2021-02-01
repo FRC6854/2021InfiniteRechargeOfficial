@@ -11,6 +11,8 @@ import edu.wpi.first.hal.simulation.SimDeviceDataJNI;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.controller.RamseteController;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.SPI.Port;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -23,6 +25,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
+import edu.wpi.first.wpilibj.trajectory.TrajectoryUtil;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpiutil.math.VecBuilder;
@@ -43,9 +46,6 @@ public class KitDrivetrain extends SubsystemBase implements Constants, RobotMap 
   private AHRS gyro;
 
   private PIDController gyroPID;
-  
-  private double leftOutput = 0;
-  private double rightOutput = 0;
 
   private DifferentialDrive drive;
   private DifferentialDriveOdometry odometry;
@@ -55,10 +55,14 @@ public class KitDrivetrain extends SubsystemBase implements Constants, RobotMap 
   private TalonSRXSimCollection leftSim;
   private TalonSRXSimCollection rightSim;
 
+  public Trajectory loadToTrench;
+  public Trajectory trenchToLoad;
+
   public KitDrivetrain() {
-    leftMaster = new VikingSRX(CAN_LEFT_FRONT, false, true, FeedbackDevice.CTRE_MagEncoder_Relative, DRIVETRAIN_kF, DRIVETRAIN_kP, DRIVETRAIN_kI, DRIVETRAIN_kD, 1250, 1250, DRIVETRAIN_kMetersPerRevolution);
+    leftMaster = new VikingSRX(CAN_LEFT_FRONT, false, false, FeedbackDevice.CTRE_MagEncoder_Relative, DRIVETRAIN_kF, DRIVETRAIN_kP, DRIVETRAIN_kI, DRIVETRAIN_kD, 1250, 1250);
     leftSlave = new VikingSPX(CAN_LEFT_BACK, leftMaster, false);
-    rightMaster = new VikingSRX(CAN_RIGHT_FRONT, true, true, FeedbackDevice.CTRE_MagEncoder_Relative, DRIVETRAIN_kF, DRIVETRAIN_kP, DRIVETRAIN_kI, DRIVETRAIN_kD, 1250, 1250, DRIVETRAIN_kMetersPerRevolution);
+
+    rightMaster = new VikingSRX(CAN_RIGHT_FRONT, true, true, FeedbackDevice.CTRE_MagEncoder_Relative, DRIVETRAIN_kF, DRIVETRAIN_kP, DRIVETRAIN_kI, DRIVETRAIN_kD, 1250, 1250);
     rightSlave = new VikingSPX(CAN_RIGHT_BACK, rightMaster, true);
 
     try {
@@ -88,8 +92,15 @@ public class KitDrivetrain extends SubsystemBase implements Constants, RobotMap 
         VecBuilder.fill(0.001, 0.001, 0.001, 0.1, 0.1, 0.005, 0.005)
       );
      
-      leftSim = rightMaster.getSimCollection();
+      leftSim = leftMaster.getSimCollection();
       rightSim = rightMaster.getSimCollection();
+    }
+
+    try {
+      loadToTrench = TrajectoryUtil.fromPathweaverJson(Filesystem.getDeployDirectory().toPath().resolve("CycleLoadToTrench.wpilib.json"));
+      trenchToLoad = TrajectoryUtil.fromPathweaverJson(Filesystem.getDeployDirectory().toPath().resolve("CycleTrenchToLoad.wpilib.json"));
+    } catch (Exception ex) {
+      DriverStation.reportError("Unable to load trajectories", ex.getStackTrace());
     }
   }
 
@@ -109,8 +120,7 @@ public class KitDrivetrain extends SubsystemBase implements Constants, RobotMap 
     // gyro.
     // We negate the right side so that positive voltages make the right side
     // move forward.
-    driveSim.setInputs(leftMaster.getMotorOutputVoltage() * (leftMaster.getInverted() ? -1 : 1), 
-      rightMaster.getMotorOutputVoltage() * (rightMaster.getInverted() ? -1 : 1));
+    driveSim.setInputs(leftMaster.getMotorOutputVoltage() * (leftMaster.getInverted() ? -1 : 1), rightMaster.getMotorOutputVoltage() * (rightMaster.getInverted() ? -1 : 1));
 
     driveSim.update(0.02);
 
@@ -150,23 +160,14 @@ public class KitDrivetrain extends SubsystemBase implements Constants, RobotMap 
   }
 
   public void arcadeDrive(double xSpeed, double zRotation) {
-    drive.arcadeDrive(xSpeed, zRotation);
+    drive.curvatureDrive(xSpeed, zRotation, true);
+    drive.feed();
   }
 
   public void tankDriveVolts(double leftVolts, double rightVolts) {
     leftMaster.setVoltage(leftVolts);
     rightMaster.setVoltage(-rightVolts);
     drive.feed();
-  }
-
-  public void motionProfile() {
-    leftMaster.motionProfileStart();
-    rightMaster.motionProfileStart();
-  }
-
-  public void resetMotionProfile() {
-    leftMaster.resetMotionProfile();
-    rightMaster.resetMotionProfile();
   }
 
   public void driveMeters(double meters) {
@@ -206,18 +207,6 @@ public class KitDrivetrain extends SubsystemBase implements Constants, RobotMap 
     return (int)rightMaster.getVelocity();
   }
 
-  public double getLeftOutput() {
-    return leftOutput;
-  }
-
-  public double getRightOutput() {
-    return rightOutput;
-  }
-
-  public double getAverageOutput() {
-    return (leftOutput + rightOutput) / 2;
-  }
-
   public int getLeftTicks() {
     return (int)leftMaster.getTicks();
   }
@@ -245,7 +234,6 @@ public class KitDrivetrain extends SubsystemBase implements Constants, RobotMap 
   }
 
   public RamseteCommand createRamseteCommand(Trajectory path) {
-    resetOdemetry(path.getInitialPose());
     return new RamseteCommand(
       path, 
       this::getPose, 
