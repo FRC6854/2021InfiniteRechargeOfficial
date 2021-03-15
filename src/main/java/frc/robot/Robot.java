@@ -24,9 +24,7 @@ public class Robot extends TimedRobot implements RobotMap {
 
   public static Controller driver = null;
   public static Controller operator = null;
-
   private static AutoManager autoManager = null;
-
   private static UsbCamera camera = null;
 
   @Override

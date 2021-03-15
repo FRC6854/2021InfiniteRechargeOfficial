@@ -2,8 +2,6 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
-import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
-import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
 
 public interface Constants {
 	
@@ -17,8 +15,8 @@ public interface Constants {
     public final double DRIVETRAIN_kD = 0.0;
 	public final double DRIVETRAIN_kF = 0.0;
 	
-	public final double DRIVETRAIN_kMetersPerRevolution = 2 * Math.PI * 0.0762;
 	public final double DRIVETRAIN_kWheelRadius = 0.0762;
+	public final double DRIVETRAIN_kMetersPerRevolution = 2 * Math.PI * DRIVETRAIN_kWheelRadius;
 
 	public final double DRIVETRAIN_kDriveGearing = 10.75;
 
@@ -29,25 +27,16 @@ public interface Constants {
 	public final double DRIVETRAIN_kMaxSpeed = 3;
 	public final double DRIVETRAIN_kMaxAcceleration = 3;
 
-	// ----------------------------------------------
-	// PATH FOLLOWING VARIABLES FOR TESTING MUST USE PROGRAM TO FIND ACTUAL VALUES
-	// ----------------------------------------------
-	// These are example values only - DO NOT USE THESE FOR YOUR OWN ROBOT!
-    // These characterization values MUST be determined either experimentally or theoretically
-    // for *your* robot's drive.
-    // The Robot Characterization Toolsuite provides a convenient tool for obtaining these
-    // values for your robot.
-    public final double DRIVETRAIN_ksVolts = 1.5;
-    public final double DRIVETRAIN_kvVoltSecondsPerMeter = 1.89;
-    public final double DRIVETRAIN_kaVoltSecondsSquaredPerMeter = 0.243;
+    public final double DRIVETRAIN_ksVolts = 2.71;
+    public final double DRIVETRAIN_kvVoltSecondsPerMeter = 20.9;
+    public final double DRIVETRAIN_kaVoltSecondsSquaredPerMeter = 0.371;
 
 	public final TrajectoryConfig DRIVETRAIN_kAutoConfig = new TrajectoryConfig(
       DRIVETRAIN_kMaxSpeed,
       DRIVETRAIN_kMaxAcceleration
 	).setKinematics(DRIVETRAIN_kKinematics);
 	
-	// Example value only - as above, this must be tuned for your drive!
-	public final double DRIVETRAIN_kPVelocity = 2;
+	public final double DRIVETRAIN_kPVelocity = 4.29e-7; // Original value: 2
 
 	/**
 	 * --------------------
