@@ -59,14 +59,14 @@ public class KitDrivetrain extends SubsystemBase implements Constants, RobotMap 
   public Trajectory trenchToLoad;
 
   public KitDrivetrain() {
-    leftMaster = new VikingSRX(CAN_LEFT_FRONT, false, false, FeedbackDevice.CTRE_MagEncoder_Relative, DRIVETRAIN_kF, DRIVETRAIN_kP, DRIVETRAIN_kI, DRIVETRAIN_kD, 1250, 1250);
+    leftMaster = new VikingSRX(CAN_LEFT_FRONT, false, true, FeedbackDevice.CTRE_MagEncoder_Relative, DRIVETRAIN_kF, DRIVETRAIN_kP, DRIVETRAIN_kI, DRIVETRAIN_kD, 1250, 1250);
     leftSlave = new VikingSPX(CAN_LEFT_BACK, leftMaster, false);
 
-    rightMaster = new VikingSRX(CAN_RIGHT_FRONT, true, true, FeedbackDevice.CTRE_MagEncoder_Relative, DRIVETRAIN_kF, DRIVETRAIN_kP, DRIVETRAIN_kI, DRIVETRAIN_kD, 1250, 1250);
-    rightSlave = new VikingSPX(CAN_RIGHT_BACK, rightMaster, true);
+    rightMaster = new VikingSRX(CAN_RIGHT_FRONT, false, false, FeedbackDevice.CTRE_MagEncoder_Relative, DRIVETRAIN_kF, DRIVETRAIN_kP, DRIVETRAIN_kI, DRIVETRAIN_kD, 1250, 1250);
+    rightSlave = new VikingSPX(CAN_RIGHT_BACK, rightMaster, false);
 
     try {
-      gyro = new AHRS(Port.kMXP); 
+      gyro = new AHRS(Port.kMXP);
     } catch (RuntimeException ex ) {
       System.out.println("--------------");
       System.out.println("NavX not plugged in");
@@ -78,10 +78,10 @@ public class KitDrivetrain extends SubsystemBase implements Constants, RobotMap 
     drive = new DifferentialDrive(leftMaster, rightMaster);
     odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(gyro.getAngle()));
 
-    field = new Field2d();
-    SmartDashboard.putData("Field", field);
-
     if (RobotBase.isSimulation()) {
+      field = new Field2d();
+      SmartDashboard.putData("Field", field);
+
       driveSim = new DifferentialDrivetrainSim(
         DCMotor.getCIM(2), 
         DRIVETRAIN_kDriveGearing,
@@ -102,6 +102,8 @@ public class KitDrivetrain extends SubsystemBase implements Constants, RobotMap 
     } catch (Exception ex) {
       DriverStation.reportError("Unable to load trajectories", ex.getStackTrace());
     }
+
+    reset();
   }
 
   @Override
@@ -110,7 +112,13 @@ public class KitDrivetrain extends SubsystemBase implements Constants, RobotMap 
       Rotation2d.fromDegrees(getGyroAngle()), 
       UnitConversion.nativeUnitsToDistanceMeters(leftMaster.getTicks()),
       UnitConversion.nativeUnitsToDistanceMeters(rightMaster.getTicks()));
-    field.setRobotPose(getPose());
+    if (RobotBase.isSimulation()) {
+      field.setRobotPose(getPose());
+    }
+    SmartDashboard.putNumber("Gyro Angle", getGyroAngle());
+    SmartDashboard.putNumber("Distance Average", (UnitConversion.nativeUnitsToDistanceMeters(getLeftTicks()) + UnitConversion.nativeUnitsToDistanceMeters(getRightTicks())) / 2);
+    SmartDashboard.putNumber("Left Speed", getWheelSpeeds().leftMetersPerSecond);
+    SmartDashboard.putNumber("Right Speed", getWheelSpeeds().rightMetersPerSecond);
   }
 
   @Override
@@ -216,7 +224,7 @@ public class KitDrivetrain extends SubsystemBase implements Constants, RobotMap 
   }
 
   public double getGyroAngle() {
-    return gyro.getAngle();
+    return -gyro.getYaw();
   }
 
   public void reset() {

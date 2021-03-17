@@ -27,7 +27,7 @@ public class AutoManager {
         case 1:
           return new ExampleTrajectory();
         case 2:
-          return new ExampleTrajectoryPathWeaver("MiddleToTrench", "TrenchToCorner");
+          return new ExampleTrajectoryPathWeaver("output/Circle");
         case 0:
           return new LimelightCalibration();
       }

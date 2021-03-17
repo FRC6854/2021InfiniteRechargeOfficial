@@ -15,38 +15,14 @@ import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 // WPI_Talon* imports are needed in case a user has a Pigeon on a Talon
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-import com.ctre.phoenix.sensors.PigeonIMU;
 import com.kauailabs.navx.frc.AHRS;
-import edu.wpi.first.wpilibj.ADXRS450_Gyro;
-import edu.wpi.first.wpilibj.AnalogGyro;
-import edu.wpi.first.wpilibj.interfaces.Gyro;
-import edu.wpi.first.wpilibj.SerialPort;
-import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.SPI;
-
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMax.IdleMode;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import com.revrobotics.CANEncoder;
-import com.revrobotics.EncoderType;
-import com.revrobotics.AlternateEncoderType;
-
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.PWMTalonSRX;
-import edu.wpi.first.wpilibj.PWMVictorSPX;
 import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.Spark;
-import edu.wpi.first.wpilibj.SpeedController;
-import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.Victor;
-import edu.wpi.first.wpilibj.VictorSP;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -55,16 +31,16 @@ import java.util.ArrayList;
 
 public class Robot extends TimedRobot {
 
-  static private double ENCODER_EDGES_PER_REV = 16384 / 4.;
+  static private double ENCODER_EDGES_PER_REV = 16384 / 4;
   static private int PIDIDX = 0;
   static private int ENCODER_EPR = 16384;
-  static private double GEARING = 10.75;
+  //static private double GEARING = 10.75;
+  static private double GEARING = 1;
   
   private double encoderConstant = (1 / GEARING) * (1 / ENCODER_EDGES_PER_REV);
 
   Joystick stick;
   DifferentialDrive drive;
-
 
   Supplier<Double> leftEncoderPosition;
   Supplier<Double> leftEncoderRate;
@@ -109,9 +85,11 @@ public class Robot extends TimedRobot {
     
       
       motor.configSelectedFeedbackSensor(
-            FeedbackDevice.QuadEncoder,
+            FeedbackDevice.CTRE_MagEncoder_Relative,
             PIDIDX, 10
-      );    
+      );
+      
+      motor.setSelectedSensorPosition(0);  
 
 
 
@@ -122,7 +100,7 @@ public class Robot extends TimedRobot {
         // set right side methods = encoder methods
 
           
-        motor.setSensorPhase(true);
+        motor.setSensorPhase(false);
         rightEncoderPosition = ()
           -> motor.getSelectedSensorPosition(PIDIDX) * encoderConstant;
         rightEncoderRate = ()
@@ -132,7 +110,7 @@ public class Robot extends TimedRobot {
 
         break;
       case LEFT:
-        motor.setSensorPhase(false);
+        motor.setSensorPhase(true);
         
         leftEncoderPosition = ()
           -> motor.getSelectedSensorPosition(PIDIDX) * encoderConstant;
@@ -167,7 +145,7 @@ public class Robot extends TimedRobot {
     
       
       motor.configSelectedFeedbackSensor(
-            FeedbackDevice.QuadEncoder,
+            FeedbackDevice.CTRE_MagEncoder_Relative,
             PIDIDX, 10
       );    
 
@@ -180,7 +158,7 @@ public class Robot extends TimedRobot {
         // set right side methods = encoder methods
 
           
-        motor.setSensorPhase(true);
+        motor.setSensorPhase(false);
         rightEncoderPosition = ()
           -> motor.getSelectedSensorPosition(PIDIDX) * encoderConstant;
         rightEncoderRate = ()
@@ -190,7 +168,7 @@ public class Robot extends TimedRobot {
 
         break;
       case LEFT:
-        motor.setSensorPhase(false);
+        motor.setSensorPhase(true);
         
         leftEncoderPosition = ()
           -> motor.getSelectedSensorPosition(PIDIDX) * encoderConstant;
@@ -221,13 +199,13 @@ public class Robot extends TimedRobot {
     
     // create left motor
     WPI_TalonSRX leftMotor = setupWPI_TalonSRX(20, Sides.LEFT, false);
-
     WPI_VictorSPX leftFollowerID12 = setupWPI_VictorSPX(12, Sides.FOLLOWER, false);
     leftFollowerID12.follow(leftMotor);
 
     WPI_TalonSRX rightMotor = setupWPI_TalonSRX(13, Sides.RIGHT, false);
-    WPI_VictorSPX rightFollowerID10 = setupWPI_VictorSPX(10, Sides.FOLLOWER, false);    
+    WPI_VictorSPX rightFollowerID10 = setupWPI_VictorSPX(10, Sides.FOLLOWER, false);
     rightFollowerID10.follow(rightMotor);
+
     drive = new DifferentialDrive(leftMotor, rightMotor);
     drive.setDeadband(0);
 
@@ -280,7 +258,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
-    drive.arcadeDrive(-stick.getY(), stick.getX());
+    drive.arcadeDrive(-stick.getRawAxis(1), stick.getRawAxis(4));
   }
 
   @Override

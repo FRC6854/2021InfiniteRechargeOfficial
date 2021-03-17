@@ -14,7 +14,7 @@ public class UnitConversion {
      * @return native unit sensor counts
      */
     public static int distanceToNativeUnits(double positionMeters) {
-        double wheelRotations = positionMeters / (Math.PI * (Constants.DRIVETRAIN_kWheelRadius * 2));
+        double wheelRotations = positionMeters / Constants.DRIVETRAIN_kMetersPerRevolution;
         double motorRotations = wheelRotations * Constants.DRIVETRAIN_kDriveGearing;
         int sensorCounts = (int) (motorRotations * Constants.DRIVETRAIN_kCPR);
         return sensorCounts;
@@ -27,7 +27,7 @@ public class UnitConversion {
      * @return native unit sensor count per 100ms
      */
     public static int velocityToNativeUnits(double velocityMetersPerSecond) {
-        double wheelRotationsPerSecond = velocityMetersPerSecond / (Math.PI * (Constants.DRIVETRAIN_kWheelRadius * 2));
+        double wheelRotationsPerSecond = velocityMetersPerSecond / Constants.DRIVETRAIN_kMetersPerRevolution;
         double motorRotationsPerSecond = wheelRotationsPerSecond * Constants.DRIVETRAIN_kDriveGearing;
         double motorRotationsPer100ms = motorRotationsPerSecond / 10;
         int sensorCountsPer100ms = (int) (motorRotationsPer100ms * Constants.DRIVETRAIN_kCPR);
@@ -43,7 +43,7 @@ public class UnitConversion {
     public static double nativeUnitsToDistanceMeters(double sensorCounts) {
         double motorRotations = (double) sensorCounts / Constants.DRIVETRAIN_kCPR;
         double wheelRotations = motorRotations / Constants.DRIVETRAIN_kDriveGearing;
-        double positionMeters = wheelRotations * (Math.PI * (Constants.DRIVETRAIN_kWheelRadius * 2));
+        double positionMeters = wheelRotations * Constants.DRIVETRAIN_kMetersPerRevolution;
         return positionMeters;
     }
 
@@ -57,7 +57,7 @@ public class UnitConversion {
         double motorRotationsPer100ms = sensorCountsPer100ms / Constants.DRIVETRAIN_kCPR;
         double motorRotationsPerSecond = motorRotationsPer100ms * 10;
         double wheelRotationsPersSecond = motorRotationsPerSecond / Constants.DRIVETRAIN_kDriveGearing;
-        double velocityMetersPerSecond = wheelRotationsPersSecond * Math.PI * (Constants.DRIVETRAIN_kWheelRadius * 2);
+        double velocityMetersPerSecond = wheelRotationsPersSecond * Constants.DRIVETRAIN_kMetersPerRevolution;
         return velocityMetersPerSecond;
     }
 }

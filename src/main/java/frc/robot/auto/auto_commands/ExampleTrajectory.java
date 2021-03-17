@@ -11,11 +11,13 @@ import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.Constants;
+import frc.robot.subsystems.Conveyor;
 import frc.robot.subsystems.KitDrivetrain;
 
-public class ExampleTrajectory extends SequentialCommandGroup {
+public class ExampleTrajectory extends ParallelCommandGroup {
   private KitDrivetrain drivetrain;
 
   public ExampleTrajectory() {
@@ -24,14 +26,19 @@ public class ExampleTrajectory extends SequentialCommandGroup {
     Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
       new Pose2d(0, 0, new Rotation2d(0)),
       List.of(
-        new Translation2d(3, 5),
-        new Translation2d(5, 5),
-        new Translation2d(7, 5)
+        new Translation2d(2, 1)
       ),
-      new Pose2d(10, 2, new Rotation2d(0)),
+      /*List.of(
+        new Translation2d(1, 1),
+        new Translation2d(2, -1)
+      ),*/
+      new Pose2d(4.2, 1, new Rotation2d(0)),
       Constants.DRIVETRAIN_kAutoConfig
     );
     
-    addCommands(drivetrain.createRamseteCommand(exampleTrajectory));
+    addCommands(drivetrain.createRamseteCommand(exampleTrajectory), new RunConveyorTime(new double[][] {
+      {3, 1, 1},
+      {5, 0, 0}
+    }));
   }
 }
