@@ -24,6 +24,8 @@ public class RunConveyorTime extends CommandBase {
 
     this.points = points;
     timer = new Timer();
+
+    addRequirements(conveyor);
   }
 
   @Override

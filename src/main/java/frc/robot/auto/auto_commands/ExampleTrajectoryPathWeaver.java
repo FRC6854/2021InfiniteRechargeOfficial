@@ -4,8 +4,6 @@
 
 package frc.robot.auto.auto_commands;
 
-import viking.motion.MotionProfileUtil;
-
 import java.nio.file.Path;
 
 import edu.wpi.first.wpilibj.DriverStation;

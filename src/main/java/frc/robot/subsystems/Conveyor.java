@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
 import frc.robot.commands.conveyor.DriveConveyor;
@@ -18,10 +19,12 @@ public class Conveyor extends SubsystemBase implements Constants, RobotMap {
   }
 
   public void setOutputIntake(double speed) {    
+    SmartDashboard.putNumber("Intake Output", speed);
     intakeConveyor.percentOutput(speed);
   }
 
   public void setOutputUpper(double speed) {
+    SmartDashboard.putNumber("Upper Output", speed);
     upperConveyor.percentOutput(speed);
   }
 

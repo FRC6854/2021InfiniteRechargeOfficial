@@ -11,8 +11,6 @@ import edu.wpi.first.hal.simulation.SimDeviceDataJNI;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.controller.RamseteController;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.SPI.Port;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -25,7 +23,6 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
-import edu.wpi.first.wpilibj.trajectory.TrajectoryUtil;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpiutil.math.VecBuilder;
@@ -59,11 +56,21 @@ public class KitDrivetrain extends SubsystemBase implements Constants, RobotMap 
   public Trajectory trenchToLoad;
 
   public KitDrivetrain() {
-    leftMaster = new VikingSRX(CAN_LEFT_FRONT, false, true, FeedbackDevice.CTRE_MagEncoder_Relative, DRIVETRAIN_kF, DRIVETRAIN_kP, DRIVETRAIN_kI, DRIVETRAIN_kD, 1250, 1250);
-    leftSlave = new VikingSPX(CAN_LEFT_BACK, leftMaster, false);
+    if (RobotBase.isReal()) {
+      leftMaster = new VikingSRX(CAN_LEFT_FRONT, false, true, FeedbackDevice.CTRE_MagEncoder_Relative, DRIVETRAIN_kF, DRIVETRAIN_kP, DRIVETRAIN_kI, DRIVETRAIN_kD, 1250, 1250);
+      leftSlave = new VikingSPX(CAN_LEFT_BACK, leftMaster, false);
 
-    rightMaster = new VikingSRX(CAN_RIGHT_FRONT, false, false, FeedbackDevice.CTRE_MagEncoder_Relative, DRIVETRAIN_kF, DRIVETRAIN_kP, DRIVETRAIN_kI, DRIVETRAIN_kD, 1250, 1250);
-    rightSlave = new VikingSPX(CAN_RIGHT_BACK, rightMaster, false);
+      rightMaster = new VikingSRX(CAN_RIGHT_FRONT, false, false, FeedbackDevice.CTRE_MagEncoder_Relative, DRIVETRAIN_kF, DRIVETRAIN_kP, DRIVETRAIN_kI, DRIVETRAIN_kD, 1250, 1250);
+      rightSlave = new VikingSPX(CAN_RIGHT_BACK, rightMaster, false);
+    }
+    else {
+      leftMaster = new VikingSRX(CAN_LEFT_FRONT, false, false, FeedbackDevice.CTRE_MagEncoder_Relative, DRIVETRAIN_kF, DRIVETRAIN_kP, DRIVETRAIN_kI, DRIVETRAIN_kD, 1250, 1250);
+      leftSlave = new VikingSPX(CAN_LEFT_BACK, leftMaster, false);
+
+      rightMaster = new VikingSRX(CAN_RIGHT_FRONT, true, true, FeedbackDevice.CTRE_MagEncoder_Relative, DRIVETRAIN_kF, DRIVETRAIN_kP, DRIVETRAIN_kI, DRIVETRAIN_kD, 1250, 1250);
+      rightSlave = new VikingSPX(CAN_RIGHT_BACK, rightMaster, true);
+    }
+    
 
     try {
       gyro = new AHRS(Port.kMXP);
@@ -74,19 +81,18 @@ public class KitDrivetrain extends SubsystemBase implements Constants, RobotMap 
     }
 
     gyroPID = new PIDController(GYRO_kP, GYRO_kI, GYRO_kD);
-
     drive = new DifferentialDrive(leftMaster, rightMaster);
     odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(gyro.getAngle()));
+    field = new Field2d();
+
+    SmartDashboard.putData("Field", field);
 
     if (RobotBase.isSimulation()) {
-      field = new Field2d();
-      SmartDashboard.putData("Field", field);
-
       driveSim = new DifferentialDrivetrainSim(
-        DCMotor.getCIM(2), 
-        DRIVETRAIN_kDriveGearing,
+        DCMotor.getCIM(2), // Number of motors per side
+        10.75, // Simulation Gearing Ratio
         7.5,
-        60,
+        60, // Mass of robot
         DRIVETRAIN_kWheelRadius, 
         DRIVETRAIN_kKinematics.trackWidthMeters, 
         VecBuilder.fill(0.001, 0.001, 0.001, 0.1, 0.1, 0.005, 0.005)
@@ -94,13 +100,6 @@ public class KitDrivetrain extends SubsystemBase implements Constants, RobotMap 
      
       leftSim = leftMaster.getSimCollection();
       rightSim = rightMaster.getSimCollection();
-    }
-
-    try {
-      loadToTrench = TrajectoryUtil.fromPathweaverJson(Filesystem.getDeployDirectory().toPath().resolve("CycleLoadToTrench.wpilib.json"));
-      trenchToLoad = TrajectoryUtil.fromPathweaverJson(Filesystem.getDeployDirectory().toPath().resolve("CycleTrenchToLoad.wpilib.json"));
-    } catch (Exception ex) {
-      DriverStation.reportError("Unable to load trajectories", ex.getStackTrace());
     }
 
     reset();
@@ -112,13 +111,8 @@ public class KitDrivetrain extends SubsystemBase implements Constants, RobotMap 
       Rotation2d.fromDegrees(getGyroAngle()), 
       UnitConversion.nativeUnitsToDistanceMeters(leftMaster.getTicks()),
       UnitConversion.nativeUnitsToDistanceMeters(rightMaster.getTicks()));
-    if (RobotBase.isSimulation()) {
-      field.setRobotPose(getPose());
-    }
-    SmartDashboard.putNumber("Gyro Angle", getGyroAngle());
-    SmartDashboard.putNumber("Distance Average", (UnitConversion.nativeUnitsToDistanceMeters(getLeftTicks()) + UnitConversion.nativeUnitsToDistanceMeters(getRightTicks())) / 2);
-    SmartDashboard.putNumber("Left Speed", getWheelSpeeds().leftMetersPerSecond);
-    SmartDashboard.putNumber("Right Speed", getWheelSpeeds().rightMetersPerSecond);
+      
+    field.setRobotPose(getPose());
   }
 
   @Override
@@ -224,7 +218,7 @@ public class KitDrivetrain extends SubsystemBase implements Constants, RobotMap 
   }
 
   public double getGyroAngle() {
-    return -gyro.getYaw();
+    return RobotBase.isSimulation() ? gyro.getYaw() : -gyro.getYaw();
   }
 
   public void reset() {
