@@ -22,7 +22,7 @@ public interface Constants {
 
 	public final int DRIVETRAIN_kCPR = 4096;
 
-	public final DifferentialDriveKinematics DRIVETRAIN_kKinematics = new DifferentialDriveKinematics(0.5266);
+	public final DifferentialDriveKinematics DRIVETRAIN_kKinematics = new DifferentialDriveKinematics(0.65);
 
 	public final double DRIVETRAIN_kMaxSpeed = 1;
 	public final double DRIVETRAIN_kMaxAcceleration = 1;
@@ -42,7 +42,7 @@ public interface Constants {
       DRIVETRAIN_kMaxAcceleration
 	).setKinematics(DRIVETRAIN_kKinematics).addConstraint(DRIVETRAIN_kAutoVoltageConstraint);
 	
-	public final double DRIVETRAIN_kPVelocity = 3; // Value with follower (without: 0.545)
+	public final double DRIVETRAIN_kPVelocity = 2.5; // Value with follower (without: 0.545)
 
 	/**
 	 * --------------------

@@ -85,7 +85,7 @@ public class KitDrivetrain extends SubsystemBase implements Constants, RobotMap 
     drive = new DifferentialDrive(leftMaster, rightMaster);
     drive.setSafetyEnabled(false);
 
-    odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(gyro.getAngle()));
+    odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getGyroAngle()));
     field = new Field2d();
 
     SmartDashboard.putData("Field", field);

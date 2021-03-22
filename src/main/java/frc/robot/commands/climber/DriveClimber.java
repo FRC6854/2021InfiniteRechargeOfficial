@@ -49,8 +49,6 @@ public class DriveClimber extends CommandBase {
       }
     }
     else {
-      //LEDControllerNew.getInstance().setMode(LEDMode.CLIMB_ACTIVE);
-
       climber.setLiftOutput(liftOutput);
       climber.setWinchOutput(0);
     }

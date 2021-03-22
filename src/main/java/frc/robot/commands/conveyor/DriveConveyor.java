@@ -61,8 +61,8 @@ public class DriveConveyor extends CommandBase {
     conveyor.fullStopUpper();
     LEDController.getInstance().setMode(LEDMode.DEFAULT);
   }
+  
   @Override
-
   public boolean isFinished() {
     return false;
   }
