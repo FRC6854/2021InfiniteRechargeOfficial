@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Robot;
 import viking.led.LEDController;
 import viking.led.LEDController.LEDMode;
@@ -17,14 +18,11 @@ import viking.Limelight.LightMode;
 
 public class ArcadeDrive extends CommandBase {
 
-  private Limelight limelight = null;
-  private PIDController aimPIDController = null;
-  private KitDrivetrain drivetrain = null;
+  private Limelight limelight = Limelight.getInstance();
+  private PIDController aimPIDController = new PIDController(Constants.AIM_kP, Constants.AIM_kI, Constants.AIM_kD);
+  private KitDrivetrain drivetrain = KitDrivetrain.getInstance();
 
   public ArcadeDrive() {
-    limelight = Limelight.getInstance();
-    drivetrain = KitDrivetrain.getInstance();
-    aimPIDController = new PIDController(Constants.AIM_kP, Constants.AIM_kI, Constants.AIM_kD);
     addRequirements(drivetrain);
   }
 

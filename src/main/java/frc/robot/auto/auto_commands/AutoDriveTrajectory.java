@@ -12,28 +12,26 @@ import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryUtil;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.KitDrivetrain;
 
-public class ExampleTrajectoryPathWeaver extends SequentialCommandGroup {
+public class AutoDriveTrajectory extends SequentialCommandGroup {
   private KitDrivetrain drivetrain;
 
-  public ExampleTrajectoryPathWeaver(String... args) {
+  public AutoDriveTrajectory(Trajectory trajectory, boolean zeroGyro) {
     drivetrain = KitDrivetrain.getInstance();
 
-    Trajectory trajectory = new Trajectory();
+    Pose2d initialPose = trajectory.getInitialPose();
+    RamseteCommand pathCommand = drivetrain.createRamseteCommand(trajectory);
 
-    for (String name : args) {
-      try {
-        Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(name + ".wpilib.json");
-        trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
-        Pose2d initialPose = trajectory.getInitialPose();
-
-        addCommands(new InstantCommand(() -> drivetrain.resetOdemetry(initialPose), drivetrain), drivetrain.createRamseteCommand(trajectory));
-
-      } catch (Exception ex) {
-        DriverStation.reportError("Unable to open trajectory: " + name, ex.getStackTrace());
-      }
-    }
+    addCommands(
+      new InstantCommand(() -> {
+        if (zeroGyro) drivetrain.zeroSensors();
+        drivetrain.resetOdemetry(initialPose);
+      }, drivetrain),
+      pathCommand,
+      new InstantCommand(() -> drivetrain.arcadeDrive(0, 0), drivetrain)
+    );
   }
 }

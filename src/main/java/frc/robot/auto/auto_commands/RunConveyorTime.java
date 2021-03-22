@@ -81,9 +81,7 @@ public class RunConveyorTime extends CommandBase {
 
   @Override
   public boolean isFinished() {
-    if (lastPoint == points.length) {
-      return true;
-    }
+    if (lastPoint == points.length - 1) return true;
     return false;
   }
 }

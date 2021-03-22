@@ -81,7 +81,10 @@ public class KitDrivetrain extends SubsystemBase implements Constants, RobotMap 
     }
 
     gyroPID = new PIDController(GYRO_kP, GYRO_kI, GYRO_kD);
+    
     drive = new DifferentialDrive(leftMaster, rightMaster);
+    drive.setSafetyEnabled(false);
+
     odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(gyro.getAngle()));
     field = new Field2d();
 
@@ -157,7 +160,6 @@ public class KitDrivetrain extends SubsystemBase implements Constants, RobotMap 
   }
 
   public void resetOdemetry(Pose2d pose) {
-    zeroSensors();
     odometry.resetPosition(pose, Rotation2d.fromDegrees(getGyroAngle()));
   }
 

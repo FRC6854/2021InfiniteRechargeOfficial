@@ -18,13 +18,11 @@ public class Conveyor extends SubsystemBase implements Constants, RobotMap {
     upperConveyor = new VikingMAX(CAN_UPPER_CONVEYOR, true);
   }
 
-  public void setOutputIntake(double speed) {    
-    SmartDashboard.putNumber("Intake Output", speed);
+  public void setOutputIntake(double speed) {
     intakeConveyor.percentOutput(speed);
   }
 
   public void setOutputUpper(double speed) {
-    SmartDashboard.putNumber("Upper Output", speed);
     upperConveyor.percentOutput(speed);
   }
 

@@ -2,8 +2,7 @@ package frc.robot.auto;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.auto.auto_commands.ExampleTrajectory;
-import frc.robot.auto.auto_commands.ExampleTrajectoryPathWeaver;
+import frc.robot.auto.auto_plans.MainAutonomousPlan;
 import frc.robot.commands.debug.LimelightCalibration;
 
 public class AutoManager {
@@ -12,9 +11,10 @@ public class AutoManager {
 
     private static SendableChooser<Integer> autoChooser = new SendableChooser<Integer>();
 
+    private MainAutonomousPlan mainAutonomousPlan = new MainAutonomousPlan();
+
     private AutoManager () {
-      autoChooser.setDefaultOption("Example Trajectory", 1);
-      autoChooser.addOption("Example Trajectory File", 2);
+      autoChooser.setDefaultOption("Main Autonomous", 1);
       autoChooser.addOption("Limelight Calibration", 0);
     }
 
@@ -25,9 +25,7 @@ public class AutoManager {
     public Command getAutoChooserCommand() {
       switch (autoChooser.getSelected()) {
         case 1:
-          return new ExampleTrajectory();
-        case 2:
-          return new ExampleTrajectoryPathWeaver("output/Circle");
+          return mainAutonomousPlan;
         case 0:
           return new LimelightCalibration();
       }

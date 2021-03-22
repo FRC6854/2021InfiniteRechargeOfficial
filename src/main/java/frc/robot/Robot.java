@@ -4,6 +4,7 @@ import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -46,12 +47,14 @@ public class Robot extends TimedRobot implements RobotMap {
     operator = new Controller(CONTROLLER_OPERATOR);
     operator.setControllerRightStickXDeadband(0.05);
     
-    KitDrivetrain.getInstance();
-    Conveyor.getInstance();
+    SmartDashboard.putData(KitDrivetrain.getInstance());
+    SmartDashboard.putData(Conveyor.getInstance());
     Shooter.getInstance();
     Climber.getInstance();
 
     OI.getInstance();
+
+    LiveWindow.disableAllTelemetry();
   }
 
   @Override
@@ -63,6 +66,8 @@ public class Robot extends TimedRobot implements RobotMap {
     if (RobotController.getBatteryVoltage() < 10) {
       LEDController.getInstance().setMode(LEDMode.LOW_VOLTAGE);
     }
+
+    CommandScheduler.getInstance().run();
   }
 
   @Override
@@ -88,18 +93,7 @@ public class Robot extends TimedRobot implements RobotMap {
   }
 
   @Override
-  public void autonomousPeriodic() {
-    CommandScheduler.getInstance().run();
-  }
-
-  @Override
   public void teleopInit() {
     System.out.println("Tele-op");
   }
-
-  @Override
-  public void teleopPeriodic() {
-    CommandScheduler.getInstance().run();
-  }
-
 }

@@ -24,14 +24,14 @@ public interface Constants {
 
 	public final DifferentialDriveKinematics DRIVETRAIN_kKinematics = new DifferentialDriveKinematics(0.5266);
 
-	public final double DRIVETRAIN_kMaxSpeed = 2;
-	public final double DRIVETRAIN_kMaxAcceleration = 2;
+	public final double DRIVETRAIN_kMaxSpeed = 1;
+	public final double DRIVETRAIN_kMaxAcceleration = 1;
 
     public final double DRIVETRAIN_ksVolts = 0.952;
     public final double DRIVETRAIN_kvVoltSecondsPerMeter = 3.08;
 	public final double DRIVETRAIN_kaVoltSecondsSquaredPerMeter = 0.0424;
 	
-	public final DifferentialDriveVoltageConstraint autoVoltageConstraint = new DifferentialDriveVoltageConstraint(
+	public final DifferentialDriveVoltageConstraint DRIVETRAIN_kAutoVoltageConstraint = new DifferentialDriveVoltageConstraint(
 		new SimpleMotorFeedforward(DRIVETRAIN_ksVolts, DRIVETRAIN_kvVoltSecondsPerMeter, DRIVETRAIN_kaVoltSecondsSquaredPerMeter),
 		DRIVETRAIN_kKinematics,
 		10
@@ -40,9 +40,9 @@ public interface Constants {
 	public final TrajectoryConfig DRIVETRAIN_kAutoConfig = new TrajectoryConfig(
       DRIVETRAIN_kMaxSpeed,
       DRIVETRAIN_kMaxAcceleration
-	).setKinematics(DRIVETRAIN_kKinematics).addConstraint(autoVoltageConstraint);
+	).setKinematics(DRIVETRAIN_kKinematics).addConstraint(DRIVETRAIN_kAutoVoltageConstraint);
 	
-	public final double DRIVETRAIN_kPVelocity = 1.2; // Value with follower (without: 0.545)
+	public final double DRIVETRAIN_kPVelocity = 3; // Value with follower (without: 0.545)
 
 	/**
 	 * --------------------
