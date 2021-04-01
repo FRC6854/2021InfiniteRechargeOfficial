@@ -2,8 +2,8 @@ package frc.robot.auto.auto_commands;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.led.LEDControllerNew;
-import frc.robot.led.LEDControllerNew.LEDMode;
+import viking.led.LEDController;
+import viking.led.LEDController.LEDMode;
 import frc.robot.subsystems.Conveyor;
 
 public class RunConveyorTime extends CommandBase {
@@ -24,6 +24,8 @@ public class RunConveyorTime extends CommandBase {
 
     this.points = points;
     timer = new Timer();
+
+    addRequirements(conveyor);
   }
 
   @Override
@@ -47,23 +49,23 @@ public class RunConveyorTime extends CommandBase {
 
     // Check intake direction
     if (lastOutputIntake > 0) {
-      LEDControllerNew.getInstance().setMode(LEDMode.LCF);
+      LEDController.getInstance().setMode(LEDMode.LCF);
     } else if (lastOutputIntake < 0) {
-      LEDControllerNew.getInstance().setMode(LEDMode.LCB);
+      LEDController.getInstance().setMode(LEDMode.LCB);
     }
 
     // Check upper direction
     if (lastOutputUpper > 0) {
-      LEDControllerNew.getInstance().setMode(LEDMode.UCF);
+      LEDController.getInstance().setMode(LEDMode.UCF);
     } else if (lastOutputUpper < 0) {
-      LEDControllerNew.getInstance().setMode(LEDMode.UCB);
+      LEDController.getInstance().setMode(LEDMode.UCB);
     }
 
     // Check both directions
     if (lastOutputUpper > 0 && lastOutputIntake > 0) {
-      LEDControllerNew.getInstance().setMode(LEDMode.BOTH_FWRD);
+      LEDController.getInstance().setMode(LEDMode.BOTH_FWRD);
     } else if (lastOutputUpper < 0 && lastOutputIntake < 0) {
-      LEDControllerNew.getInstance().setMode(LEDMode.BOTH_BKWD);
+      LEDController.getInstance().setMode(LEDMode.BOTH_BKWD);
     }
 
     conveyor.setOutputIntake(lastOutputIntake);
@@ -74,14 +76,12 @@ public class RunConveyorTime extends CommandBase {
   public void end(boolean interrupted) {
     timer.stop();
     conveyor.fullStop();
-    LEDControllerNew.getInstance().setMode(LEDMode.DEFAULT);
+    LEDController.getInstance().setMode(LEDMode.DEFAULT);
   }
 
   @Override
   public boolean isFinished() {
-    if (lastPoint == points.length) {
-      return true;
-    }
+    if (lastPoint == points.length - 1) return true;
     return false;
   }
 }

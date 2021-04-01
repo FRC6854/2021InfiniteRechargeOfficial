@@ -1,5 +1,10 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
+import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
+
 public interface Constants {
 	
 	/**
@@ -10,11 +15,34 @@ public interface Constants {
     public final double DRIVETRAIN_kP = 1.0;
     public final double DRIVETRAIN_kI = 0.0; 
     public final double DRIVETRAIN_kD = 0.0;
-	public final double DRIVETRAIN_kF = 0.5;
+	public final double DRIVETRAIN_kF = 0.0;
 	
-	public final double DRIVETRAIN_kMetersPerRevolution = 2 * Math.PI * 0.0762;
+	public final double DRIVETRAIN_kWheelRadius = 0.0762;
+	public final double DRIVETRAIN_kMetersPerRevolution = 2 * Math.PI * DRIVETRAIN_kWheelRadius;
 
-	public final double DRIVETRAIN_kDeadband = 0.02; 
+	public final int DRIVETRAIN_kCPR = 4096;
+
+	public final DifferentialDriveKinematics DRIVETRAIN_kKinematics = new DifferentialDriveKinematics(0.65);
+
+	public final double DRIVETRAIN_kMaxSpeed = 1;
+	public final double DRIVETRAIN_kMaxAcceleration = 1;
+
+    public final double DRIVETRAIN_ksVolts = 0.952;
+    public final double DRIVETRAIN_kvVoltSecondsPerMeter = 3.08;
+	public final double DRIVETRAIN_kaVoltSecondsSquaredPerMeter = 0.0424;
+	
+	public final DifferentialDriveVoltageConstraint DRIVETRAIN_kAutoVoltageConstraint = new DifferentialDriveVoltageConstraint(
+		new SimpleMotorFeedforward(DRIVETRAIN_ksVolts, DRIVETRAIN_kvVoltSecondsPerMeter, DRIVETRAIN_kaVoltSecondsSquaredPerMeter),
+		DRIVETRAIN_kKinematics,
+		10
+	);
+
+	public final TrajectoryConfig DRIVETRAIN_kAutoConfig = new TrajectoryConfig(
+      DRIVETRAIN_kMaxSpeed,
+      DRIVETRAIN_kMaxAcceleration
+	).setKinematics(DRIVETRAIN_kKinematics).addConstraint(DRIVETRAIN_kAutoVoltageConstraint);
+	
+	public final double DRIVETRAIN_kPVelocity = 5; // Value with follower (without: 0.545)
 
 	/**
 	 * --------------------

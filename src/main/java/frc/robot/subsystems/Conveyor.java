@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
 import frc.robot.commands.conveyor.DriveConveyor;
@@ -17,7 +18,7 @@ public class Conveyor extends SubsystemBase implements Constants, RobotMap {
     upperConveyor = new VikingMAX(CAN_UPPER_CONVEYOR, true);
   }
 
-  public void setOutputIntake(double speed) {    
+  public void setOutputIntake(double speed) {
     intakeConveyor.percentOutput(speed);
   }
 
@@ -26,11 +27,11 @@ public class Conveyor extends SubsystemBase implements Constants, RobotMap {
   }
 
   public void fullStopIntake() {
-    intakeConveyor.getSparkMAX().disable();
+    intakeConveyor.disable();
   }
 
   public void fullStopUpper() {
-    upperConveyor.getSparkMAX().disable();
+    upperConveyor.disable();
   }
 
   public void fullStop() {

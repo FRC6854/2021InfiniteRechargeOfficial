@@ -2,8 +2,8 @@ package frc.robot.commands.conveyor;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Robot;
-import frc.robot.led.LEDControllerNew;
-import frc.robot.led.LEDControllerNew.LEDMode;
+import viking.led.LEDController;
+import viking.led.LEDController.LEDMode;
 import frc.robot.subsystems.Conveyor;
 
 public class DriveConveyor extends CommandBase {
@@ -29,26 +29,26 @@ public class DriveConveyor extends CommandBase {
       conveyor.setOutputIntake(output);
       conveyor.setOutputUpper(output);
       if(output > 0) {
-        LEDControllerNew.getInstance().setMode(LEDMode.BOTH_FWRD);
+        LEDController.getInstance().setMode(LEDMode.BOTH_FWRD);
       } else if (output < 0) {
-        LEDControllerNew.getInstance().setMode(LEDMode.BOTH_BKWD);
+        LEDController.getInstance().setMode(LEDMode.BOTH_BKWD);
       } else {
-        LEDControllerNew.getInstance().setMode(LEDMode.DEFAULT);
+        LEDController.getInstance().setMode(LEDMode.DEFAULT);
       }
     } 
     else {
       if (output > 0) {
-        LEDControllerNew.getInstance().setMode(LEDMode.BOTH_FWRD);
+        LEDController.getInstance().setMode(LEDMode.BOTH_FWRD);
         conveyor.setOutputIntake(output);
         conveyor.setOutputUpper(output / 10);
       }
       else if (output < 0) {
-        LEDControllerNew.getInstance().setMode(LEDMode.BOTH_BKWD);
+        LEDController.getInstance().setMode(LEDMode.BOTH_BKWD);
         conveyor.setOutputIntake(output / 10);
         conveyor.setOutputUpper(output);
       }
       else {
-        LEDControllerNew.getInstance().setMode(LEDMode.DEFAULT);
+        LEDController.getInstance().setMode(LEDMode.DEFAULT);
         conveyor.fullStopIntake();
         conveyor.fullStopUpper();
       }
@@ -59,10 +59,10 @@ public class DriveConveyor extends CommandBase {
   public void end(boolean interrupted) {
     conveyor.fullStopIntake();
     conveyor.fullStopUpper();
-    LEDControllerNew.getInstance().setMode(LEDMode.DEFAULT);
+    LEDController.getInstance().setMode(LEDMode.DEFAULT);
   }
+  
   @Override
-
   public boolean isFinished() {
     return false;
   }

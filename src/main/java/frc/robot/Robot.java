@@ -4,13 +4,14 @@ import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.auto.AutoManager;
 import frc.robot.auto.auto_commands.AimShoot;
-import frc.robot.led.LEDControllerNew;
-import frc.robot.led.LEDControllerNew.LEDMode;
+import viking.led.LEDController;
+import viking.led.LEDController.LEDMode;
 import frc.robot.subsystems.Conveyor;
 import frc.robot.subsystems.KitDrivetrain;
 import frc.robot.subsystems.Shooter;
@@ -24,9 +25,7 @@ public class Robot extends TimedRobot implements RobotMap {
 
   public static Controller driver = null;
   public static Controller operator = null;
-
   private static AutoManager autoManager = null;
-
   private static UsbCamera camera = null;
 
   @Override
@@ -40,16 +39,22 @@ public class Robot extends TimedRobot implements RobotMap {
     autoManager = AutoManager.getInstance();
 
     driver = new Controller(CONTROLLER_DRIVER);
+    driver.setControllerLeftStickXDeadband(0.1);
+    driver.setControllerLeftStickYDeadband(0.1);
+    driver.setControllerRightStickXDeadband(0.1);
+    driver.setControllerRightStickYDeadband(0.1);
 
     operator = new Controller(CONTROLLER_OPERATOR);
     operator.setControllerRightStickXDeadband(0.05);
     
-    KitDrivetrain.getInstance();
-    Conveyor.getInstance();
+    SmartDashboard.putData(KitDrivetrain.getInstance());
+    SmartDashboard.putData(Conveyor.getInstance());
     Shooter.getInstance();
     Climber.getInstance();
 
     OI.getInstance();
+
+    LiveWindow.disableAllTelemetry();
   }
 
   @Override
@@ -59,14 +64,16 @@ public class Robot extends TimedRobot implements RobotMap {
 
     // Low Voltage Display
     if (RobotController.getBatteryVoltage() < 10) {
-      LEDControllerNew.getInstance().setMode(LEDMode.LOW_VOLTAGE);
+      LEDController.getInstance().setMode(LEDMode.LOW_VOLTAGE);
     }
+
+    CommandScheduler.getInstance().run();
   }
 
   @Override
   public void disabledInit() {
     System.out.println("Disabled");
-    LEDControllerNew.getInstance().setMode(LEDMode.DEFAULT);
+    LEDController.getInstance().setMode(LEDMode.DEFAULT);
     CommandScheduler.getInstance().cancelAll();
   }
 
@@ -74,7 +81,7 @@ public class Robot extends TimedRobot implements RobotMap {
   public void autonomousInit() {
     System.out.println("Autonomous");
 
-    LEDControllerNew.getInstance().setMode(LEDMode.DEFAULT);
+    LEDController.getInstance().setMode(LEDMode.DEFAULT);
 
     Command autoCommand = autoManager.getAutoChooserCommand();
     if (autoCommand != null) {
@@ -86,18 +93,7 @@ public class Robot extends TimedRobot implements RobotMap {
   }
 
   @Override
-  public void autonomousPeriodic() {
-    CommandScheduler.getInstance().run();
-  }
-
-  @Override
   public void teleopInit() {
     System.out.println("Tele-op");
   }
-
-  @Override
-  public void teleopPeriodic() {
-    CommandScheduler.getInstance().run();
-  }
-
 }

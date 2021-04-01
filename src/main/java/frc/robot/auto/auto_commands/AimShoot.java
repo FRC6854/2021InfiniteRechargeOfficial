@@ -1,8 +1,8 @@
 package frc.robot.auto.auto_commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.led.LEDControllerNew;
-import frc.robot.led.LEDControllerNew.LEDMode;
+import viking.led.LEDController;
+import viking.led.LEDController.LEDMode;
 import frc.robot.subsystems.Constants;
 import frc.robot.subsystems.Conveyor;
 import frc.robot.subsystems.KitDrivetrain;
@@ -62,26 +62,26 @@ public class AimShoot extends CommandBase {
           shooter.setOutputBottom(Constants.MIN_SPEED);
         }
 
-        LEDControllerNew.getInstance().setMode(LEDMode.VISION);
+        LEDController.getInstance().setMode(LEDMode.VISION);
       }
       else {
         conveyor.fullStop();
         shooter.fullStop();
 
-        LEDControllerNew.getInstance().setMode(LEDMode.NO_VISION);
+        LEDController.getInstance().setMode(LEDMode.NO_VISION);
       }
     }
     else {
       shooter.fullStop();
       conveyor.fullStop();
       drivetrain.arcadeDrive(0, 0);
-      LEDControllerNew.getInstance().setMode(LEDMode.DEFAULT);
+      LEDController.getInstance().setMode(LEDMode.DEFAULT);
     }
   }
 
   @Override
   public void end(boolean interrupted) {
-    LEDControllerNew.getInstance().setMode(LEDMode.DEFAULT);
+    LEDController.getInstance().setMode(LEDMode.DEFAULT);
     limelight.setDriverMode(true);
     limelight.setLEDMode(LightMode.OFF);
     shooter.fullStop();

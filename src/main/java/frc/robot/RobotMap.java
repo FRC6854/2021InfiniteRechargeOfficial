@@ -52,6 +52,8 @@ public interface RobotMap {
     public static final int CAN_LEFT_BACK = 12;
     public static final int CAN_RIGHT_BACK = 10;
 
+    public static final int CAN_PIGEON_IMU = 21;
+
     // SHOOTER
     public static final int CAN_TOP_SHOOTER = 5;
     public static final int CAN_BOTTOM_SHOOTER = 2;

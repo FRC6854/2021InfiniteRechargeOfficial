@@ -23,16 +23,16 @@ public class Climber extends SubsystemBase implements Constants, RobotMap {
     lift = new VikingMAX(CAN_LIFT, true);
     massShifter = new VikingMAX(CAN_MASS_SHIFTER, false);
 
-    winchMaster = new VikingSRX(CAN_WINCH_MASTER, false, false, FeedbackDevice.CTRE_MagEncoder_Relative, WINCH_kF, WINCH_kP, WINCH_kI, WINCH_kD, WINCH_MAX_VELOCITY, WINCH_ACCELERATION, 0);
+    winchMaster = new VikingSRX(CAN_WINCH_MASTER, false, false, FeedbackDevice.CTRE_MagEncoder_Relative, WINCH_kF, WINCH_kP, WINCH_kI, WINCH_kD, WINCH_MAX_VELOCITY, WINCH_ACCELERATION);
     winchSlave = new VikingSPX(CAN_WINCH_SLAVE, winchMaster, false);
 
     lift.setPIDF(LIFT_kP, LIFT_kI, LIFT_kD, LIFT_kF);
     lift.setSmartMotion(LIFT_MAX_VELOCITY, LIFT_ACCELERATION);
 
-    lift.getSparkMAX().enableSoftLimit(SoftLimitDirection.kForward, true);
-    lift.getSparkMAX().setSoftLimit(SoftLimitDirection.kForward, LIFT_MAX_ROTATIONS);
-    lift.getSparkMAX().enableSoftLimit(SoftLimitDirection.kReverse, true);
-    lift.getSparkMAX().setSoftLimit(SoftLimitDirection.kReverse, 0.05f);
+    lift.enableSoftLimit(SoftLimitDirection.kForward, true);
+    lift.setSoftLimit(SoftLimitDirection.kForward, LIFT_MAX_ROTATIONS);
+    lift.enableSoftLimit(SoftLimitDirection.kReverse, true);
+    lift.setSoftLimit(SoftLimitDirection.kReverse, 0.05f);
   }
 
   public void setLiftPosition(double ticks) {
@@ -60,8 +60,8 @@ public class Climber extends SubsystemBase implements Constants, RobotMap {
   }
 
   public void fullStop() {
-    lift.getSparkMAX().disable();
-    massShifter.getSparkMAX().disable();
+    lift.disable();
+    massShifter.disable();
   }
 
   public double getLiftOutput() {
@@ -73,7 +73,7 @@ public class Climber extends SubsystemBase implements Constants, RobotMap {
   }
 
   public double getWinchOutput() {
-    return winchMaster.getTalonSRX().getMotorOutputPercent();
+    return winchMaster.getMotorOutputPercent();
   }
 
   public int getWinchTicks() {
