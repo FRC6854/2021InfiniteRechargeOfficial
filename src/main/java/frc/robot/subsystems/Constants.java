@@ -42,7 +42,7 @@ public interface Constants {
       DRIVETRAIN_kMaxAcceleration
 	).setKinematics(DRIVETRAIN_kKinematics).addConstraint(DRIVETRAIN_kAutoVoltageConstraint);
 	
-	public final double DRIVETRAIN_kPVelocity = 2.5; // Value with follower (without: 0.545)
+	public final double DRIVETRAIN_kPVelocity = 5; // Value with follower (without: 0.545)
 
 	/**
 	 * --------------------
