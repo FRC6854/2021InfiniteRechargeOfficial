@@ -4,6 +4,9 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Constants;
 import frc.robot.subsystems.KitDrivetrain;
 
+/**
+ * PID command to rotate to a specific angle. This isn't nessacary for a future year since WPILib has a better PID command class.
+ */
 public class DriveAngle extends CommandBase implements Constants {
   private KitDrivetrain drivetrain = null;
 

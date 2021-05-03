@@ -6,6 +6,9 @@ import viking.led.LEDController;
 import viking.led.LEDController.LEDMode;
 import frc.robot.subsystems.Conveyor;
 
+/**
+ * Conveyor speed command depending on driver input
+ */
 public class DriveConveyor extends CommandBase {
 
   Conveyor conveyor = null;

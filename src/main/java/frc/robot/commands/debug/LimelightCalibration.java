@@ -4,6 +4,9 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import viking.Limelight;
 import viking.Limelight.LightMode;
 
+/**
+ * This is for when you arrive to competition to tune the vision pipeline.
+ */
 public class LimelightCalibration extends CommandBase {
 
   private Limelight limelight = null;

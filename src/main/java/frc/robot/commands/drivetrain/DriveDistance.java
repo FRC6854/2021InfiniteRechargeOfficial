@@ -3,6 +3,9 @@ package frc.robot.commands.drivetrain;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.KitDrivetrain;
 
+/**
+ * Drive a certain number of meters class
+ */
 public class DriveDistance extends CommandBase {
   private KitDrivetrain drivetrain = null;
   

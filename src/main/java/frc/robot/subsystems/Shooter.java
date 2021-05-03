@@ -17,7 +17,6 @@ public class Shooter extends SubsystemBase implements Constants, RobotMap {
     bottomShooter = new VikingMAX(CAN_BOTTOM_SHOOTER, false);
 
     topShooter.setPIDF(CONVEYOR_kP, CONVEYOR_kI, CONVEYOR_kD, CONVEYOR_kF);
-
     bottomShooter.setPIDF(CONVEYOR_kP, CONVEYOR_kI, CONVEYOR_kD, CONVEYOR_kF);
   }
 

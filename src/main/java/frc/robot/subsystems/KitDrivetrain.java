@@ -56,6 +56,7 @@ public class KitDrivetrain extends SubsystemBase implements Constants, RobotMap 
   public Trajectory trenchToLoad;
 
   public KitDrivetrain() {
+    // Initalize motors. If the robot is a simulation, we invert motors
     if (RobotBase.isReal()) {
       leftMaster = new VikingSRX(CAN_LEFT_FRONT, false, true, FeedbackDevice.CTRE_MagEncoder_Relative, DRIVETRAIN_kF, DRIVETRAIN_kP, DRIVETRAIN_kI, DRIVETRAIN_kD, 1250, 1250);
       leftSlave = new VikingSPX(CAN_LEFT_BACK, leftMaster, false);

@@ -14,6 +14,9 @@ import viking.controllers.PIDController;
 import viking.Limelight;
 import viking.Limelight.LightMode;
 
+/**
+ * This is a basic ArcadeDrive command, but includes logic for vision aiming (center the vision target)
+ */
 public class ArcadeDrive extends CommandBase {
 
   private Limelight limelight = Limelight.getInstance();

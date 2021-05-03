@@ -29,6 +29,7 @@ public class Climber extends SubsystemBase implements Constants, RobotMap {
     lift.setPIDF(LIFT_kP, LIFT_kI, LIFT_kD, LIFT_kF);
     lift.setSmartMotion(LIFT_MAX_VELOCITY, LIFT_ACCELERATION);
 
+    // This sets the soft limits preventing the motor from driving to an unsafe position
     lift.enableSoftLimit(SoftLimitDirection.kForward, true);
     lift.setSoftLimit(SoftLimitDirection.kForward, LIFT_MAX_ROTATIONS);
     lift.enableSoftLimit(SoftLimitDirection.kReverse, true);

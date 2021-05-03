@@ -6,6 +6,9 @@ import frc.robot.Robot;
 import viking.led.LEDController;
 import viking.led.LEDController.LEDMode;
 
+/**
+ * Climber command for endgame
+ */
 public class DriveClimber extends CommandBase {
 
   private Climber climber = null;
