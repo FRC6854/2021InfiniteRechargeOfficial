@@ -35,10 +35,8 @@ public class KitDrivetrain extends SubsystemBase implements Constants, RobotMap 
   private static KitDrivetrain instance = null;
 
   private VikingSRX leftMaster;
-  private VikingSPX leftSlave;
 
   private VikingSRX rightMaster;
-  private VikingSPX rightSlave;
 
   private AHRS gyro;
 
@@ -59,17 +57,13 @@ public class KitDrivetrain extends SubsystemBase implements Constants, RobotMap 
     // Initalize motors. If the robot is a simulation, we invert motors
     if (RobotBase.isReal()) {
       leftMaster = new VikingSRX(CAN_LEFT_FRONT, false, true, FeedbackDevice.CTRE_MagEncoder_Relative, DRIVETRAIN_kF, DRIVETRAIN_kP, DRIVETRAIN_kI, DRIVETRAIN_kD, 1250, 1250);
-      leftSlave = new VikingSPX(CAN_LEFT_BACK, leftMaster, false);
 
       rightMaster = new VikingSRX(CAN_RIGHT_FRONT, false, false, FeedbackDevice.CTRE_MagEncoder_Relative, DRIVETRAIN_kF, DRIVETRAIN_kP, DRIVETRAIN_kI, DRIVETRAIN_kD, 1250, 1250);
-      rightSlave = new VikingSPX(CAN_RIGHT_BACK, rightMaster, false);
     }
     else {
       leftMaster = new VikingSRX(CAN_LEFT_FRONT, false, false, FeedbackDevice.CTRE_MagEncoder_Relative, DRIVETRAIN_kF, DRIVETRAIN_kP, DRIVETRAIN_kI, DRIVETRAIN_kD, 1250, 1250);
-      leftSlave = new VikingSPX(CAN_LEFT_BACK, leftMaster, false);
 
       rightMaster = new VikingSRX(CAN_RIGHT_FRONT, true, true, FeedbackDevice.CTRE_MagEncoder_Relative, DRIVETRAIN_kF, DRIVETRAIN_kP, DRIVETRAIN_kI, DRIVETRAIN_kD, 1250, 1250);
-      rightSlave = new VikingSPX(CAN_RIGHT_BACK, rightMaster, true);
     }
     
 
