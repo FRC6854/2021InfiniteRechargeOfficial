@@ -2,7 +2,6 @@ package frc.robot.commands.drivetrain;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Robot;
 import viking.led.LEDController;
 import viking.led.LEDController.LEDMode;
@@ -29,12 +28,6 @@ public class ArcadeDrive extends CommandBase {
 
   @Override
   public void execute() {
-    if (Robot.driver.getControllerYButtonPressed()) {
-      CommandScheduler.getInstance().schedule(
-        drivetrain.createRamseteCommand(drivetrain.loadToTrench).andThen(drivetrain.createRamseteCommand(drivetrain.trenchToLoad))
-        .withInterrupt(() -> (Robot.driver.getControllerLeftStickX() > 0 || Robot.driver.getControllerLeftStickY() > 0 || Robot.driver.getControllerRightStickX() > 0 || Robot.driver.getControllerRightStickY() > 0))
-      );
-    }
     if (Robot.driver.getControllerAButton()) {
       // Setup Limelight for targeting
       limelight.setLEDMode(LightMode.ON);

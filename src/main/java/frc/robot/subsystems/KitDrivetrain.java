@@ -35,7 +35,6 @@ public class KitDrivetrain extends SubsystemBase implements Constants, RobotMap 
   private static KitDrivetrain instance = null;
 
   private VikingSRX leftMaster;
-
   private VikingSRX rightMaster;
 
   private AHRS gyro;
@@ -50,20 +49,21 @@ public class KitDrivetrain extends SubsystemBase implements Constants, RobotMap 
   private TalonSRXSimCollection leftSim;
   private TalonSRXSimCollection rightSim;
 
-  public Trajectory loadToTrench;
-  public Trajectory trenchToLoad;
-
   public KitDrivetrain() {
     // Initalize motors. If the robot is a simulation, we invert motors
     if (RobotBase.isReal()) {
       leftMaster = new VikingSRX(CAN_LEFT_FRONT, false, true, FeedbackDevice.CTRE_MagEncoder_Relative, DRIVETRAIN_kF, DRIVETRAIN_kP, DRIVETRAIN_kI, DRIVETRAIN_kD, 1250, 1250);
+      new VikingSPX(CAN_LEFT_BACK, leftMaster, false);
 
       rightMaster = new VikingSRX(CAN_RIGHT_FRONT, false, false, FeedbackDevice.CTRE_MagEncoder_Relative, DRIVETRAIN_kF, DRIVETRAIN_kP, DRIVETRAIN_kI, DRIVETRAIN_kD, 1250, 1250);
+      new VikingSPX(CAN_RIGHT_BACK, rightMaster, false);
     }
     else {
       leftMaster = new VikingSRX(CAN_LEFT_FRONT, false, false, FeedbackDevice.CTRE_MagEncoder_Relative, DRIVETRAIN_kF, DRIVETRAIN_kP, DRIVETRAIN_kI, DRIVETRAIN_kD, 1250, 1250);
+      new VikingSPX(CAN_LEFT_BACK, leftMaster, false);
 
       rightMaster = new VikingSRX(CAN_RIGHT_FRONT, true, true, FeedbackDevice.CTRE_MagEncoder_Relative, DRIVETRAIN_kF, DRIVETRAIN_kP, DRIVETRAIN_kI, DRIVETRAIN_kD, 1250, 1250);
+      new VikingSPX(CAN_RIGHT_BACK, rightMaster, true);
     }
     
 
@@ -130,6 +130,7 @@ public class KitDrivetrain extends SubsystemBase implements Constants, RobotMap 
     rightSim.setQuadratureVelocity(UnitConversion.velocityToNativeUnits(driveSim.getRightVelocityMetersPerSecond()));
 
     // Crazy dumb NavX simulation stuff that I don't get
+    // This basically simulates the Gyro angle
     int testing = SimDeviceDataJNI.getSimDeviceHandle("navX-Sensor[0]");
     SimDouble angle = new SimDouble(SimDeviceDataJNI.getSimValueHandle(testing, "Yaw"));
     angle.set(driveSim.getHeading().getDegrees());
