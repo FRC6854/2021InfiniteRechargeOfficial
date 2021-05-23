@@ -3,8 +3,8 @@ package frc.robot.commands.climber;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Climber;
 import frc.robot.Robot;
-import viking.led.LEDController;
-import viking.led.LEDController.LEDMode;
+import frc.robot.subsystems.LEDController;
+import frc.robot.subsystems.LEDController.LEDMode;
 
 /**
  * Climber command for endgame

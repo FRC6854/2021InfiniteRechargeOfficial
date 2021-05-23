@@ -68,4 +68,8 @@ public interface RobotMap {
     public static final int CAN_LIFT = 7;
     public static final int CAN_MASS_SHIFTER = 8;
 
+    /**
+     * PWM devices e.g. Addressable LED
+     */
+    public static final int PWN_ADDRESSABLE_LED = 4;
 }

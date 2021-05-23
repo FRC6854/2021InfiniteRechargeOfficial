@@ -1,8 +1,8 @@
 package frc.robot.auto.auto_commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import viking.led.LEDController;
-import viking.led.LEDController.LEDMode;
+import frc.robot.subsystems.LEDController;
+import frc.robot.subsystems.LEDController.LEDMode;
 import frc.robot.subsystems.Constants;
 import frc.robot.subsystems.Conveyor;
 import frc.robot.subsystems.KitDrivetrain;

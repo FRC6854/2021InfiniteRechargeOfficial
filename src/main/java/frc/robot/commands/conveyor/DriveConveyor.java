@@ -2,8 +2,8 @@ package frc.robot.commands.conveyor;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Robot;
-import viking.led.LEDController;
-import viking.led.LEDController.LEDMode;
+import frc.robot.subsystems.LEDController;
+import frc.robot.subsystems.LEDController.LEDMode;
 import frc.robot.subsystems.Conveyor;
 
 /**
@@ -27,7 +27,6 @@ public class DriveConveyor extends CommandBase {
   @Override
   public void execute() {
     double output = Robot.driver.getControllerRTrigger() - Robot.driver.getControllerLTrigger();
-
     if (Robot.driver.getControllerLBumper() == true || Robot.driver.getControllerRBumper() == true) {
       conveyor.setOutputIntake(output);
       conveyor.setOutputUpper(output);
