@@ -7,7 +7,6 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
-import frc.robot.commands.led.LEDRunner;
 
 public class LEDController extends SubsystemBase implements RobotMap {
 	public static final int num_leds = 60;
@@ -33,6 +32,10 @@ public class LEDController extends SubsystemBase implements RobotMap {
 	private Color alliance_colour;
 	private LEDMode current_mode = LEDMode.DEFAULT;
 	private int counter = 0;
+
+	public static final int led_update_wait_cycle = 3;
+
+	int state=0;
 
 	public LEDController() {
 		if (DriverStation.getInstance().getAlliance() == Alliance.Blue) {
@@ -102,24 +105,30 @@ public class LEDController extends SubsystemBase implements RobotMap {
 		}
 	}
 
-	public void update() {
-		System.out.println("UPDATE");
-		switch (current_mode) {
-		case DEFAULT:
-			set_default();
-			break;
-		case WINCH_ACTIVE:
-			set_winch_active();
-			break;
-		case BOTH_FWRD:
-			set_both_forward();
-			break;
-		case BOTH_BKWD:
-			set_both_backward();
-			break;
-		default:
-			System.out.println(current_mode);
-			break;
+	@Override
+	public void periodic() {
+		if(state == 0){
+			switch (current_mode) {
+				case DEFAULT:
+					set_default();
+					break;
+				case WINCH_ACTIVE:
+					set_winch_active();
+					break;
+				case BOTH_FWRD:
+					set_both_forward();
+					break;
+				case BOTH_BKWD:
+					set_both_backward();
+					break;
+				default:
+					System.out.println(current_mode);
+					break;
+			}
+		}
+		state++;
+		if(state == led_update_wait_cycle){
+			state = 0;
 		}
 	}
 
@@ -131,10 +140,7 @@ public class LEDController extends SubsystemBase implements RobotMap {
 	}
 
 	public static LEDController getInstance() {
-		if (instance == null) {
-			instance = new LEDController();
-			instance.setDefaultCommand(new LEDRunner());
-		}
+		if (instance == null) instance = new LEDController();
 		return instance;
 	}
 }

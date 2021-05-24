@@ -10,6 +10,11 @@ import frc.robot.commands.debug.LimelightCalibration;
 import frc.robot.paths.LineToTrench;
 import frc.robot.paths.TrenchToLine;
 
+/**
+ * Logic for how you choose the Auto command.
+ * This creates a SendableChooser so that you can pick the command before the robot is enabled through Shuffleboard or SmartDashboard.
+ * To create a new Command you just add a new Option with a unique integer.
+ */
 public class AutoManager {
 
     private static AutoManager instance = null;
