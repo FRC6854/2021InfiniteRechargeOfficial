@@ -7,8 +7,8 @@ import frc.robot.subsystems.Constants;
 import frc.robot.subsystems.Conveyor;
 import frc.robot.subsystems.KitDrivetrain;
 import frc.robot.subsystems.Shooter;
-import viking.Limelight;
-import viking.Limelight.LightMode;
+import viking.vision.Limelight;
+import viking.vision.Limelight.LightMode;
 import viking.controllers.PIDController;
 
 public class AimShoot extends CommandBase {

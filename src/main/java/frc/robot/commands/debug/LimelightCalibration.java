@@ -1,8 +1,8 @@
 package frc.robot.commands.debug;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import viking.Limelight;
-import viking.Limelight.LightMode;
+import viking.vision.Limelight;
+import viking.vision.Limelight.LightMode;
 
 /**
  * This is for when you arrive to competition to tune the vision pipeline.

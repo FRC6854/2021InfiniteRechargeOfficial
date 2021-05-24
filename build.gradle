@@ -64,7 +64,7 @@ dependencies {
     simulation wpi.deps.sim.gui(wpi.platforms.desktop, false)
     simulation wpi.deps.sim.driverstation(wpi.platforms.desktop, false)
 
-    compile 'com.github.FRC6854:VIKING:new-path-following-SNAPSHOT'
+    compile 'com.github.FRC6854:VIKING:limelight-sim-SNAPSHOT'
 
     // Websocket extensions require additional configuration.
     // simulation wpi.deps.sim.ws_server(wpi.platforms.desktop, false)

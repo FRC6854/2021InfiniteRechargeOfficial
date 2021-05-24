@@ -7,11 +7,9 @@ import frc.robot.subsystems.LEDController;
 import frc.robot.subsystems.LEDController.LEDMode;
 import frc.robot.subsystems.Constants;
 import frc.robot.subsystems.KitDrivetrain;
-
 import viking.controllers.PIDController;
-
-import viking.Limelight;
-import viking.Limelight.LightMode;
+import viking.vision.Limelight;
+import viking.vision.Limelight.LightMode;
 
 /**
  * This is a basic ArcadeDrive command, but includes logic for vision aiming (center the vision target)

@@ -17,9 +17,9 @@ import frc.robot.subsystems.KitDrivetrain;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Climber;
 import viking.Controller;
-import viking.Limelight;
 import viking.OI;
-import viking.Limelight.LightMode;
+import viking.vision.Limelight;
+import viking.vision.Limelight.LightMode;
 
 public class Robot extends TimedRobot implements RobotMap {
 

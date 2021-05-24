@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Robot;
 import frc.robot.subsystems.Constants;
 import frc.robot.subsystems.Shooter;
-import viking.Limelight;
+import viking.vision.Limelight;
 
 /**
  * This class could be written as a state-machine in the shooter subsystem. The purpose of this is for manual control of the motors with special states depending on driver input or vision target info
