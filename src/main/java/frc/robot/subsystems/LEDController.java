@@ -35,7 +35,7 @@ public class LEDController extends SubsystemBase implements RobotMap {
 
 	public static final int led_update_wait_cycle = 3;
 
-	int state=0;
+	int state = 0;
 
 	public LEDController() {
 		if (DriverStation.getInstance().getAlliance() == Alliance.Blue) {

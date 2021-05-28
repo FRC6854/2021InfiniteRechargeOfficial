@@ -8,49 +8,49 @@ import frc.robot.subsystems.KitDrivetrain;
  * PID command to rotate to a specific angle. This isn't nessacary for a future year since WPILib has a better PID command class.
  */
 public class DriveAngle extends CommandBase implements Constants {
-  private KitDrivetrain drivetrain = null;
+	private KitDrivetrain drivetrain = null;
 
-  final double toleranceDegrees = 1.5;
-  final int waitForTime = 15;
-  
-  double angle;
-  double speed;
-  boolean withinTolerance = false;
+	final double toleranceDegrees = 1.5;
+	final int waitForTime = 15;
 
-  int timer = 0;
+	double angle;
+	double speed;
+	boolean withinTolerance = false;
 
-  public DriveAngle(double angle, double speed) {
-    drivetrain = KitDrivetrain.getInstance();
+	int timer = 0;
 
-    addRequirements(drivetrain);
+	public DriveAngle(double angle, double speed) {
+		drivetrain = KitDrivetrain.getInstance();
 
-    this.angle = angle;
-    this.speed = speed;
+		addRequirements(drivetrain);
 
-    drivetrain.changeGyroPID(GYRO_kP, GYRO_kI, GYRO_kD);
-    drivetrain.changeGyroPIDTolerance(toleranceDegrees);
-  }
+		this.angle = angle;
+		this.speed = speed;
 
-  @Override
-  public void execute() {
-    drivetrain.turn(angle, speed, toleranceDegrees);
-    withinTolerance = (drivetrain.getGyroAngle() < (angle + toleranceDegrees) && drivetrain.getGyroAngle() > (angle - toleranceDegrees));
+		drivetrain.changeGyroPID(GYRO_kP, GYRO_kI, GYRO_kD);
+		drivetrain.changeGyroPIDTolerance(toleranceDegrees);
+	}
 
-    if (withinTolerance) {
-      timer++;
-    }
-  }
+	@Override
+	public void execute() {
+		drivetrain.turn(angle, speed, toleranceDegrees);
+		withinTolerance = (drivetrain.getGyroAngle() < (angle + toleranceDegrees) && drivetrain.getGyroAngle() > (angle - toleranceDegrees));
 
-  @Override
-  public boolean isFinished() {
-    if (withinTolerance && timer > waitForTime) {
-      return true;
-    }
-    return false;
-  }
+		if (withinTolerance) {
+			timer++;
+		}
+	}
 
-  @Override
-  public void end(boolean interrupted) {
-    drivetrain.arcadeDrive(0, 0);
-  }
+	@Override
+	public boolean isFinished() {
+		if (withinTolerance && timer > waitForTime) {
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public void end(boolean interrupted) {
+		drivetrain.arcadeDrive(0, 0);
+	}
 }

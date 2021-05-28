@@ -7,58 +7,58 @@ import viking.controllers.rev.VikingMAX;
 
 public class Conveyor extends SubsystemBase implements Constants, RobotMap {
 
-  private static Conveyor instance = null;
+	private static Conveyor instance = null;
 
-  private VikingMAX intakeConveyor;
-  private VikingMAX upperConveyor;
+	private VikingMAX intakeConveyor;
+	private VikingMAX upperConveyor;
 
-  private Conveyor() {
-    intakeConveyor = new VikingMAX(CAN_INTAKE_CONVEYOR, false);
-    upperConveyor = new VikingMAX(CAN_UPPER_CONVEYOR, true);
-  }
+	private Conveyor() {
+		intakeConveyor = new VikingMAX(CAN_INTAKE_CONVEYOR, false);
+		upperConveyor = new VikingMAX(CAN_UPPER_CONVEYOR, true);
+	}
 
-  public void setOutputIntake(double speed) {
-    intakeConveyor.percentOutput(speed);
-  }
+	public void setOutputIntake(double speed) {
+		intakeConveyor.percentOutput(speed);
+	}
 
-  public void setOutputUpper(double speed) {
-    upperConveyor.percentOutput(speed);
-  }
+	public void setOutputUpper(double speed) {
+		upperConveyor.percentOutput(speed);
+	}
 
-  public void fullStopIntake() {
-    intakeConveyor.disable();
-  }
+	public void fullStopIntake() {
+		intakeConveyor.disable();
+	}
 
-  public void fullStopUpper() {
-    upperConveyor.disable();
-  }
+	public void fullStopUpper() {
+		upperConveyor.disable();
+	}
 
-  public void fullStop() {
-    fullStopIntake();
-    fullStopUpper();
-  }
+	public void fullStop() {
+		fullStopIntake();
+		fullStopUpper();
+	}
 
-  public double getIntakeOutput() {
-    return intakeConveyor.getOutput();
-  }
+	public double getIntakeOutput() {
+		return intakeConveyor.getOutput();
+	}
 
-  public double getUpperOutput() {
-    return upperConveyor.getOutput();
-  }
+	public double getUpperOutput() {
+		return upperConveyor.getOutput();
+	}
 
-  public VikingMAX getIntakeMotor() {
-    return intakeConveyor;
-  }
+	public VikingMAX getIntakeMotor() {
+		return intakeConveyor;
+	}
 
-  public VikingMAX getUpperMotor() {
-    return upperConveyor;
-  }
+	public VikingMAX getUpperMotor() {
+		return upperConveyor;
+	}
 
-  public static Conveyor getInstance() {
-    if (instance == null) {
-      instance = new Conveyor();
-      instance.setDefaultCommand(new DriveConveyor());
-    }
-    return instance;
-  }
+	public static Conveyor getInstance() {
+		if (instance == null) {
+			instance = new Conveyor();
+			instance.setDefaultCommand(new DriveConveyor());
+		}
+		return instance;
+	}
 }

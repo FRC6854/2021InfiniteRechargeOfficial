@@ -17,33 +17,33 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.KitDrivetrain;
 
 public class AutoDrivePath extends SequentialCommandGroup {
-  private KitDrivetrain drivetrain;
+	private KitDrivetrain drivetrain;
 
-  public AutoDrivePath(String path, boolean zeroGyro) {
-    drivetrain = KitDrivetrain.getInstance();
+	public AutoDrivePath(String path, boolean zeroGyro) {
+		drivetrain = KitDrivetrain.getInstance();
 
-    Trajectory trajectory = new Trajectory();
+		Trajectory trajectory = new Trajectory();
 
-    try {
-      System.out.println("Loading trajectory...");
-      Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(path + ".wpilib.json");
-      trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
-      System.out.println("Done loading trajectory!");
-      Pose2d initialPose = trajectory.getInitialPose();
+		try {
+			System.out.println("Loading trajectory...");
+			Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(path + ".wpilib.json");
+			trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
+			System.out.println("Done loading trajectory!");
+			Pose2d initialPose = trajectory.getInitialPose();
 
-      RamseteCommand pathCommand = drivetrain.createRamseteCommand(trajectory);
+			RamseteCommand pathCommand = drivetrain.createRamseteCommand(trajectory);
 
-      addCommands(
-        new InstantCommand(() -> {
-          if (zeroGyro) drivetrain.zeroSensors();
-          drivetrain.resetOdemetry(initialPose);
-        }, drivetrain),
-        pathCommand,
-        new InstantCommand(() -> drivetrain.arcadeDrive(0, 0), drivetrain)
-      );
+			addCommands(
+				new InstantCommand(() -> {
+					if (zeroGyro) drivetrain.zeroSensors();
+					drivetrain.resetOdemetry(initialPose);
+				}, drivetrain),
+				pathCommand,
+				new InstantCommand(() -> drivetrain.arcadeDrive(0, 0), drivetrain)
+			);
 
-    } catch (Exception ex) {
-      DriverStation.reportError("Unable to open trajectory: " + path, ex.getStackTrace());
-    }
-  }
+		} catch (Exception ex) {
+			DriverStation.reportError("Unable to open trajectory: " + path, ex.getStackTrace());
+		}
+	}
 }

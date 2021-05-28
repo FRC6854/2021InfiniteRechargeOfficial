@@ -7,40 +7,40 @@ import frc.robot.subsystems.KitDrivetrain;
  * Drive a certain number of meters class
  */
 public class DriveDistance extends CommandBase {
-  private KitDrivetrain drivetrain = null;
-  
-  private double meters;
+	private KitDrivetrain drivetrain = null;
 
-  private int timer = 0;
+	private double meters;
 
-  final int waitForTime = 15;
+	private int timer = 0;
 
-  public DriveDistance(double meters) {
-    drivetrain = KitDrivetrain.getInstance();
+	final int waitForTime = 15;
 
-    addRequirements(drivetrain);
+	public DriveDistance(double meters) {
+		drivetrain = KitDrivetrain.getInstance();
 
-    this.meters = meters;
-  }
+		addRequirements(drivetrain);
 
-  @Override
-  public void initialize() {
-    drivetrain.zeroSensors();
-    drivetrain.driveMeters(meters);
-  }
+		this.meters = meters;
+	}
 
-  @Override
-  public void execute() {
-    timer++;
-  }
+	@Override
+	public void initialize() {
+		drivetrain.zeroSensors();
+		drivetrain.driveMeters(meters);
+	}
 
-  @Override
-  public boolean isFinished() {
-    return (timer > waitForTime && (drivetrain.getLeftVelocity() == 0 && drivetrain.getRightVelocity() == 0));
-  }
+	@Override
+	public void execute() {
+		timer++;
+	}
 
-  @Override
-  public void end(boolean interrupted) {
-    drivetrain.arcadeDrive(0, 0);
-  }
+	@Override
+	public boolean isFinished() {
+		return (timer > waitForTime && (drivetrain.getLeftVelocity() == 0 && drivetrain.getRightVelocity() == 0));
+	}
+
+	@Override
+	public void end(boolean interrupted) {
+		drivetrain.arcadeDrive(0, 0);
+	}
 }

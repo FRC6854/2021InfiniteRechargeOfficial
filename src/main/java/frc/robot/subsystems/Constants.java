@@ -6,17 +6,17 @@ import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
 
 public interface Constants {
-	
+
 	/**
 	 * --------------------
 	 * 	DRIVETRAIN CONSTANTS
 	 * --------------------
 	 */
-    public final double DRIVETRAIN_kP = 1.0;
-    public final double DRIVETRAIN_kI = 0.0; 
-    public final double DRIVETRAIN_kD = 0.0;
+	public final double DRIVETRAIN_kP = 1.0;
+	public final double DRIVETRAIN_kI = 0.0;
+	public final double DRIVETRAIN_kD = 0.0;
 	public final double DRIVETRAIN_kF = 0.0;
-	
+
 	public final double DRIVETRAIN_kWheelRadius = 0.0762;
 	public final double DRIVETRAIN_kMetersPerRevolution = 2 * Math.PI * DRIVETRAIN_kWheelRadius;
 
@@ -27,10 +27,10 @@ public interface Constants {
 	public final double DRIVETRAIN_kMaxSpeed = 1;
 	public final double DRIVETRAIN_kMaxAcceleration = 1;
 
-    public final double DRIVETRAIN_ksVolts = 0.952;
-    public final double DRIVETRAIN_kvVoltSecondsPerMeter = 3.08;
+	public final double DRIVETRAIN_ksVolts = 0.952;
+	public final double DRIVETRAIN_kvVoltSecondsPerMeter = 3.08;
 	public final double DRIVETRAIN_kaVoltSecondsSquaredPerMeter = 0.0424;
-	
+
 	public final DifferentialDriveVoltageConstraint DRIVETRAIN_kAutoVoltageConstraint = new DifferentialDriveVoltageConstraint(
 		new SimpleMotorFeedforward(DRIVETRAIN_ksVolts, DRIVETRAIN_kvVoltSecondsPerMeter, DRIVETRAIN_kaVoltSecondsSquaredPerMeter),
 		DRIVETRAIN_kKinematics,
@@ -38,10 +38,10 @@ public interface Constants {
 	);
 
 	public final TrajectoryConfig DRIVETRAIN_kAutoConfig = new TrajectoryConfig(
-      DRIVETRAIN_kMaxSpeed,
-      DRIVETRAIN_kMaxAcceleration
+	  DRIVETRAIN_kMaxSpeed,
+	  DRIVETRAIN_kMaxAcceleration
 	).setKinematics(DRIVETRAIN_kKinematics).addConstraint(DRIVETRAIN_kAutoVoltageConstraint);
-	
+
 	public final double DRIVETRAIN_kPVelocity = 5; // Value with follower (without: 0.545)
 
 	/**
@@ -83,7 +83,7 @@ public interface Constants {
 	 * --------------------
 	 */
 
-	
+
 	public final double SHOOTER_kP = 0.001;
 	public final double SHOOTER_kI = 0;
 	public final double SHOOTER_kD = 0.005;

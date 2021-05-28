@@ -9,22 +9,22 @@ import frc.robot.paths.TrajectoryContainer;
 import frc.robot.subsystems.KitDrivetrain;
 
 public class AutoDriveTrajectory extends SequentialCommandGroup {
-  private KitDrivetrain drivetrain;
+	private KitDrivetrain drivetrain;
 
-  public AutoDriveTrajectory(TrajectoryContainer trajectory, boolean zeroGyro) {
-    drivetrain = KitDrivetrain.getInstance();
+	public AutoDriveTrajectory(TrajectoryContainer trajectory, boolean zeroGyro) {
+		drivetrain = KitDrivetrain.getInstance();
 
-    Trajectory traj = trajectory.buildTrajectory();
-    Pose2d initialPose = traj.getInitialPose();
-    RamseteCommand pathCommand = drivetrain.createRamseteCommand(traj);
+		Trajectory traj = trajectory.buildTrajectory();
+		Pose2d initialPose = traj.getInitialPose();
+		RamseteCommand pathCommand = drivetrain.createRamseteCommand(traj);
 
-    addCommands(
-      new InstantCommand(() -> {
-        if (zeroGyro) drivetrain.zeroSensors();
-        drivetrain.resetOdemetry(initialPose);
-      }, drivetrain),
-      pathCommand,
-      new InstantCommand(() -> drivetrain.arcadeDrive(0, 0), drivetrain)
-    );
-  }
+		addCommands(
+			new InstantCommand(() -> {
+				if (zeroGyro) drivetrain.zeroSensors();
+				drivetrain.resetOdemetry(initialPose);
+			}, drivetrain),
+			pathCommand,
+			new InstantCommand(() -> drivetrain.arcadeDrive(0, 0), drivetrain)
+		);
+	}
 }
